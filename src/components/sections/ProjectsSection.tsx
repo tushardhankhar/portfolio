@@ -4,105 +4,33 @@ import { useState, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { ExternalLink, Code2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  fallbackProjects,
+  type Project,
+  type ProjectCategory,
+} from "@/data/fallback";
 
-type FilterCategory = "All" | "Full Stack" | "AI/ML" | "Tools";
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  longDescription: string;
-  category: FilterCategory[];
-  tech: string[];
-  liveUrl?: string;
-  githubUrl?: string;
-  gradientFrom: string;
-  gradientTo: string;
-  featured: boolean;
-  badge?: string;
-}
-
-const PROJECTS: Project[] = [
-  {
-    id: "adcraft-ai",
-    title: "AdCraft AI",
-    description:
-      "AI-powered ad copy generator that creates high-converting advertising content for local businesses using GPT-4 and fine-tuned prompting strategies.",
-    longDescription:
-      "Built for viamedia.ai, AdCraft AI streamlines ad creation for 3,000+ local advertisers. The system uses a multi-step LLM pipeline: industry classification, audience analysis, copy generation, and A/B variant creation — all in under 3 seconds.",
-    category: ["Full Stack", "AI/ML"],
-    tech: ["Next.js", "TypeScript", "OpenAI API", "PostgreSQL", "Redis", "AWS Lambda"],
-    liveUrl: "https://viamedia.ai",
-    githubUrl: "https://github.com/tushardhankhar/adcraft-ai",
-    gradientFrom: "#864797",
-    gradientTo: "#0CC0DF",
-    featured: true,
-    badge: "Production",
-  },
-  {
-    id: "collab-doc",
-    title: "CollabDoc",
-    description:
-      "Real-time collaborative document editor built with Yjs CRDT, WebSockets, and Next.js. Supports concurrent editing, presence indicators, and version history.",
-    longDescription:
-      "A fully functional Notion-like document editor with offline support, conflict-free merging, and real-time presence. Used by 500+ early adopters within the first month of launch.",
-    category: ["Full Stack"],
-    tech: ["Next.js", "Yjs", "WebSockets", "Node.js", "MongoDB", "Tailwind CSS"],
-    liveUrl: "https://collabdoc.app",
-    githubUrl: "https://github.com/tushardhankhar/collabdoc",
-    gradientFrom: "#0CC0DF",
-    gradientTo: "#2f3342",
-    featured: false,
-    badge: "Open Source",
-  },
-  {
-    id: "llm-router",
-    title: "LLM Router",
-    description:
-      "Intelligent API gateway that routes requests across multiple LLM providers (OpenAI, Anthropic, Gemini) based on cost, latency, and capability requirements.",
-    longDescription:
-      "A production-grade LLM proxy with smart routing, automatic fallbacks, cost tracking, and usage analytics. Saves teams 40-60% on LLM API costs through intelligent model selection.",
-    category: ["AI/ML", "Tools"],
-    tech: ["Go", "Redis", "PostgreSQL", "Docker", "Anthropic API", "OpenAI API"],
-    githubUrl: "https://github.com/tushardhankhar/llm-router",
-    gradientFrom: "#F2DA00",
-    gradientTo: "#864797",
-    featured: false,
-    badge: "OSS Tool",
-  },
-  {
-    id: "devflow",
-    title: "DevFlow CLI",
-    description:
-      "A developer productivity CLI tool that automates common workflows: git branching conventions, PR template generation, and local environment bootstrapping.",
-    longDescription:
-      "DevFlow CLI reduces onboarding friction for new engineers and enforces team conventions automatically. 200+ GitHub stars and used by 5+ engineering teams in production.",
-    category: ["Tools"],
-    tech: ["Node.js", "TypeScript", "Commander.js", "Ink", "GitHub API"],
-    liveUrl: "https://www.npmjs.com/package/devflow-cli",
-    githubUrl: "https://github.com/tushardhankhar/devflow-cli",
-    gradientFrom: "#B190C1",
-    gradientTo: "#0CC0DF",
-    featured: false,
-    badge: "200+ Stars",
-  },
-];
+type FilterCategory = "All" | ProjectCategory;
 
 const FILTER_TABS: FilterCategory[] = ["All", "Full Stack", "AI/ML", "Tools"];
 
 interface ProjectsSectionProps {
   id?: string;
+  projects?: Project[];
 }
 
-export default function ProjectsSection({ id }: ProjectsSectionProps) {
+export default function ProjectsSection({
+  id,
+  projects = fallbackProjects,
+}: ProjectsSectionProps) {
   const [activeFilter, setActiveFilter] = useState<FilterCategory>("All");
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
 
   const filtered =
     activeFilter === "All"
-      ? PROJECTS
-      : PROJECTS.filter((p) => p.category.includes(activeFilter));
+      ? projects
+      : projects.filter((p) => p.category.includes(activeFilter));
 
   return (
     <section

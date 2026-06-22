@@ -5,17 +5,34 @@ import AboutSection from "@/components/sections/AboutSection";
 import ExperienceSection from "@/components/sections/ExperienceSection";
 import ProjectsSection from "@/components/sections/ProjectsSection";
 import ContactSection from "@/components/sections/ContactSection";
+import {
+  getAbout,
+  getExperiences,
+  getProjects,
+  getSiteSettings,
+} from "@/lib/sanity-fetch";
 
-export default function Home() {
+export default async function Home() {
+  const [projects, experiences, about, siteSettings] = await Promise.all([
+    getProjects(),
+    getExperiences(),
+    getAbout(),
+    getSiteSettings(),
+  ]);
+
   return (
     <>
       <Navbar />
       <main>
-        <HeroSection id="hero" />
-        <AboutSection id="about" />
-        <ExperienceSection id="experience" />
-        <ProjectsSection id="work" />
-        <ContactSection id="contact" />
+        <HeroSection id="hero" siteSettings={siteSettings} />
+        <AboutSection id="about" about={about} />
+        <ExperienceSection
+          id="experience"
+          experiences={experiences}
+          resumeUrl={siteSettings.resumeUrl}
+        />
+        <ProjectsSection id="work" projects={projects} />
+        <ContactSection id="contact" siteSettings={siteSettings} about={about} />
       </main>
       <FloatingDock />
 
@@ -36,7 +53,7 @@ export default function Home() {
             className="font-semibold"
             style={{ color: "#B190C1", fontFamily: "var(--font-poppins)" }}
           >
-            Tushar Dhankhar
+            {siteSettings.name}
           </span>{" "}
           · Built with Next.js 15 &amp; Tailwind CSS
         </p>

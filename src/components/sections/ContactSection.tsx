@@ -7,6 +7,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Code2, Link, AtSign, Mail, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  fallbackSiteSettings,
+  fallbackAbout,
+  type SiteSettings,
+  type AboutContent,
+} from "@/data/fallback";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -19,38 +25,44 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
-const SOCIALS = [
-  {
-    label: "GitHub",
-    href: "https://github.com/tushardhankhar",
-    icon: Code2,
-    color: "#e8eaf0",
-  },
-  {
-    label: "LinkedIn",
-    href: "https://linkedin.com/in/tushardhankhar",
-    icon: Link,
-    color: "#0CC0DF",
-  },
-  {
-    label: "Twitter",
-    href: "https://twitter.com/tushardhankhar",
-    icon: AtSign,
-    color: "#B190C1",
-  },
-  {
-    label: "Email",
-    href: "mailto:tdhankhar@viamedia.ai",
-    icon: Mail,
-    color: "#F2DA00",
-  },
-];
-
 interface ContactSectionProps {
   id?: string;
+  siteSettings?: SiteSettings;
+  about?: AboutContent;
 }
 
-export default function ContactSection({ id }: ContactSectionProps) {
+export default function ContactSection({
+  id,
+  siteSettings = fallbackSiteSettings,
+  about = fallbackAbout,
+}: ContactSectionProps) {
+  const SOCIALS = [
+    {
+      label: "GitHub",
+      href: siteSettings.githubUrl,
+      icon: Code2,
+      color: "#e8eaf0",
+    },
+    {
+      label: "LinkedIn",
+      href: siteSettings.linkedinUrl,
+      icon: Link,
+      color: "#0CC0DF",
+    },
+    {
+      label: "Twitter",
+      href: siteSettings.twitterUrl,
+      icon: AtSign,
+      color: "#B190C1",
+    },
+    {
+      label: "Email",
+      href: `mailto:${siteSettings.email}`,
+      icon: Mail,
+      color: "#F2DA00",
+    },
+  ];
+
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
   const [submitState, setSubmitState] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -313,18 +325,18 @@ export default function ContactSection({ id }: ContactSectionProps) {
                 Preferred Contact
               </h4>
               <a
-                href="mailto:tdhankhar@viamedia.ai"
+                href={`mailto:${siteSettings.email}`}
                 className="flex items-center gap-3 text-sm text-white/60 hover:text-yellow transition-colors"
                 style={{ fontFamily: "var(--font-raleway)" }}
               >
                 <Mail size={15} className="flex-shrink-0" />
-                tdhankhar@viamedia.ai
+                {siteSettings.email}
               </a>
               <p
                 className="text-xs text-white/35"
                 style={{ fontFamily: "var(--font-raleway)" }}
               >
-                Hyderabad, India · IST (UTC+5:30)
+                {about.location} · IST (UTC+5:30)
               </p>
             </div>
 

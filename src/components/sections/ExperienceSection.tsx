@@ -5,78 +5,19 @@ import { motion, useInView } from "framer-motion";
 import { Download, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDateRange } from "@/lib/utils";
-
-interface Experience {
-  id: string;
-  company: string;
-  companyUrl?: string;
-  role: string;
-  start: string;
-  end: string | null;
-  location: string;
-  type: string;
-  bullets: string[];
-  tech: string[];
-  color: string;
-}
-
-const EXPERIENCES: Experience[] = [
-  {
-    id: "viamedia",
-    company: "viamedia.ai",
-    companyUrl: "https://viamedia.ai",
-    role: "Senior Full Stack Engineer",
-    start: "Jan 2023",
-    end: null,
-    location: "Hyderabad, India (Remote)",
-    type: "Full-time",
-    bullets: [
-      "Architected and shipped a multi-tenant AI-powered campaign management platform serving 3,000+ local advertisers, reducing campaign setup time by 65%.",
-      "Led migration from a monolithic Express.js API to a microservices architecture on AWS, improving system reliability to 99.97% uptime and cutting P99 latency by 40%.",
-      "Integrated OpenAI GPT-4 and Anthropic Claude APIs to auto-generate ad copy and targeting recommendations, increasing conversion rates by 22% across client accounts.",
-    ],
-    tech: ["Next.js", "TypeScript", "Node.js", "PostgreSQL", "Redis", "AWS", "OpenAI API", "Docker"],
-    color: "#864797",
-  },
-  {
-    id: "freelance",
-    company: "Independent Consulting",
-    role: "Full Stack Engineer",
-    start: "Jun 2021",
-    end: "Dec 2022",
-    location: "Remote",
-    type: "Contract",
-    bullets: [
-      "Delivered 8 end-to-end web applications for startups across fintech, healthtech, and e-commerce verticals — all shipped on time and within scope.",
-      "Built a real-time collaborative document editor (similar to Notion) using Next.js, Yjs, and WebSockets, adopted by 500+ users in the first month.",
-      "Implemented CI/CD pipelines with GitHub Actions and automated deployments to Vercel / Railway, reducing deployment friction for all client teams.",
-    ],
-    tech: ["React", "Next.js", "Node.js", "MongoDB", "WebSockets", "Yjs", "Stripe", "Vercel"],
-    color: "#0CC0DF",
-  },
-  {
-    id: "startup",
-    company: "BuildFast Labs",
-    role: "Software Engineer",
-    start: "Aug 2019",
-    end: "May 2021",
-    location: "Hyderabad, India",
-    type: "Full-time",
-    bullets: [
-      "Developed and maintained 4 SaaS products from 0 to 1, contributing across the full stack: React frontends, REST/GraphQL APIs, and PostgreSQL data models.",
-      "Reduced frontend bundle size by 38% through code-splitting, lazy loading, and image optimization, improving LCP scores from 4.2s to 1.8s.",
-      "Mentored 2 junior engineers, conducted code reviews, and established the team's first documented coding standards and PR review process.",
-    ],
-    tech: ["React", "GraphQL", "Express.js", "PostgreSQL", "TypeScript", "Cypress", "GCP"],
-    color: "#B190C1",
-  },
-];
+import { fallbackExperiences, type Experience } from "@/data/fallback";
 
 interface ExperienceSectionProps {
   id?: string;
+  experiences?: Experience[];
+  resumeUrl?: string;
 }
 
-export default function ExperienceSection({ id }: ExperienceSectionProps) {
+export default function ExperienceSection({
+  id,
+  experiences = fallbackExperiences,
+  resumeUrl = "/Tushar_Dhankhar_Resume.pdf",
+}: ExperienceSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
 
@@ -125,7 +66,7 @@ export default function ExperienceSection({ id }: ExperienceSectionProps) {
 
           {/* Experience entries */}
           <div className="flex flex-col gap-12">
-            {EXPERIENCES.map((exp, index) => (
+            {experiences.map((exp, index) => (
               <motion.div
                 key={exp.id}
                 initial={{ opacity: 0, x: 40 }}
@@ -258,7 +199,7 @@ export default function ExperienceSection({ id }: ExperienceSectionProps) {
           className="mt-16 flex justify-center"
         >
           <a
-            href="/Tushar_Dhankhar_Resume.pdf"
+            href={resumeUrl}
             target="_blank"
             rel="noopener noreferrer"
             className={cn(

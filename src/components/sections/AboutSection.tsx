@@ -4,24 +4,11 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { MapPin, Briefcase, Zap, Coffee, Quote } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const FUN_FACTS = [
-  "☕ I run on coffee and curiosity",
-  "🌙 Nights are my peak coding hours",
-  "🎵 Lo-fi beats fuel my best PRs",
-  "🧩 I treat every bug as a puzzle",
-  "🚀 Shipped 3 side projects last month",
-];
-
-const AVAILABILITY_TAGS = [
-  "Full-time",
-  "Remote",
-  "Contract",
-  "Consulting",
-];
+import { fallbackAbout, type AboutContent } from "@/data/fallback";
 
 interface AboutSectionProps {
   id?: string;
+  about?: AboutContent;
 }
 
 const containerVariants = {
@@ -42,7 +29,10 @@ const cardVariants = {
   },
 };
 
-export default function AboutSection({ id }: AboutSectionProps) {
+export default function AboutSection({
+  id,
+  about = fallbackAbout,
+}: AboutSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
 
@@ -75,7 +65,7 @@ export default function AboutSection({ id }: AboutSectionProps) {
           >
             Get to know me
           </p>
-          <h2 className="section-title">About Me</h2>
+          <h2 className="section-title">{about.heading}</h2>
         </motion.div>
 
         {/* Bento Grid */}
@@ -116,34 +106,15 @@ export default function AboutSection({ id }: AboutSectionProps) {
               >
                 Senior Full Stack Engineer
               </h3>
-              <p
-                className="text-white/60 leading-relaxed text-sm"
-                style={{ fontFamily: "var(--font-raleway)" }}
-              >
-                I&apos;m a senior full-stack engineer with 5+ years of experience building
-                scalable web applications. Currently at{" "}
-                <span className="text-soft-purple font-medium">viamedia.ai</span>,
-                where I architect and ship AI-powered advertising technology used by
-                thousands of local businesses across the US.
-              </p>
-              <p
-                className="text-white/60 leading-relaxed text-sm"
-                style={{ fontFamily: "var(--font-raleway)" }}
-              >
-                My stack of choice: React / Next.js on the frontend, Node.js / Go on
-                the backend, and PostgreSQL / Redis for data. I love integrating LLMs
-                into products — turning language model capabilities into delightful
-                real-world features.
-              </p>
-              <p
-                className="text-white/60 leading-relaxed text-sm"
-                style={{ fontFamily: "var(--font-raleway)" }}
-              >
-                Outside of work, I contribute to open source, write about engineering
-                on my blog, and occasionally mentor junior developers. I believe in
-                writing code that&apos;s not just functional, but maintainable, tested,
-                and a pleasure to read.
-              </p>
+              {about.bio.map((paragraph, i) => (
+                <p
+                  key={i}
+                  className="text-white/60 leading-relaxed text-sm"
+                  style={{ fontFamily: "var(--font-raleway)" }}
+                >
+                  {paragraph}
+                </p>
+              ))}
             </div>
           </motion.div>
 
@@ -163,7 +134,7 @@ export default function AboutSection({ id }: AboutSectionProps) {
                 className="text-white font-semibold mb-1"
                 style={{ fontFamily: "var(--font-poppins)" }}
               >
-                Hyderabad, India
+                {about.location}
               </h4>
               <p
                 className="text-white/50 text-sm"
@@ -218,7 +189,7 @@ export default function AboutSection({ id }: AboutSectionProps) {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {AVAILABILITY_TAGS.map((tag) => (
+              {about.availabilityTags.map((tag) => (
                 <span key={tag} className="tech-tag">
                   {tag}
                 </span>
@@ -244,7 +215,7 @@ export default function AboutSection({ id }: AboutSectionProps) {
               Fun Facts
             </h4>
             <ul className="flex flex-col gap-2">
-              {FUN_FACTS.map((fact) => (
+              {about.funFacts.map((fact) => (
                 <li
                   key={fact}
                   className="text-sm text-white/60 leading-relaxed"
@@ -283,9 +254,7 @@ export default function AboutSection({ id }: AboutSectionProps) {
                 className="text-white/70 text-sm leading-relaxed italic"
                 style={{ fontFamily: "var(--font-raleway)" }}
               >
-                &quot;Great software is not just about solving today&apos;s problems
-                — it&apos;s about building a foundation that makes tomorrow&apos;s
-                problems easier.&quot;
+                &quot;{about.philosophy}&quot;
               </p>
             </blockquote>
             <div className="mt-auto flex items-center gap-2">

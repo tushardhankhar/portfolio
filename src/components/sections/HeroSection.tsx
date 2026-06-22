@@ -2,21 +2,21 @@
 
 import { useState, useEffect, useRef } from "react";
 import { ChevronDown, ArrowRight, Download } from "lucide-react";
-import { cn } from "@/lib/utils";
 import gsap from "gsap";
-
-const ROLES = [
-  "Full Stack Engineer",
-  "AI Builder",
-  "Open Source Contributor",
-  "Problem Solver",
-];
+import { fallbackSiteSettings, type SiteSettings } from "@/data/fallback";
 
 interface HeroSectionProps {
   id?: string;
+  siteSettings?: SiteSettings;
 }
 
-export default function HeroSection({ id }: HeroSectionProps) {
+export default function HeroSection({
+  id,
+  siteSettings = fallbackSiteSettings,
+}: HeroSectionProps) {
+  const ROLES = siteSettings.roles;
+  const [firstName, ...lastNameParts] = siteSettings.name.split(" ");
+  const lastName = lastNameParts.join(" ");
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isTyping, setIsTyping] = useState(true);
@@ -145,7 +145,7 @@ export default function HeroSection({ id }: HeroSectionProps) {
                 }}
               >
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                Available for opportunities
+                {siteSettings.availabilityStatus}
               </span>
             </div>
 
@@ -155,7 +155,7 @@ export default function HeroSection({ id }: HeroSectionProps) {
               className="opacity-0 text-white/60 text-lg"
               style={{ fontFamily: "var(--font-raleway)" }}
             >
-              Hi there, I&apos;m
+              {siteSettings.heroGreeting}
             </p>
 
             {/* Name */}
@@ -174,9 +174,13 @@ export default function HeroSection({ id }: HeroSectionProps) {
                 backgroundClip: "text",
               }}
             >
-              Tushar
-              <br />
-              Dhankhar
+              {firstName}
+              {lastName && (
+                <>
+                  <br />
+                  {lastName}
+                </>
+              )}
             </h1>
 
             {/* Role typewriter */}
@@ -203,9 +207,7 @@ export default function HeroSection({ id }: HeroSectionProps) {
               className="opacity-0 text-white/60 text-lg leading-relaxed max-w-lg"
               style={{ fontFamily: "var(--font-raleway)" }}
             >
-              I build fast, beautiful, and intelligent web experiences. Passionate
-              about full-stack engineering, AI integrations, and crafting products
-              that make people&apos;s lives easier.
+              {siteSettings.heroTagline}
             </p>
 
             {/* CTA Buttons */}
@@ -218,7 +220,7 @@ export default function HeroSection({ id }: HeroSectionProps) {
                 />
               </button>
               <a
-                href="/Tushar_Dhankhar_Resume.pdf"
+                href={siteSettings.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-outline-white"
@@ -233,11 +235,7 @@ export default function HeroSection({ id }: HeroSectionProps) {
               data-animate
               className="opacity-0 flex flex-wrap gap-8 pt-4 border-t border-white/[0.06]"
             >
-              {[
-                { value: "5+", label: "Years Experience" },
-                { value: "30+", label: "Projects Shipped" },
-                { value: "10+", label: "Open Source Contributions" },
-              ].map((stat) => (
+              {siteSettings.stats.map((stat) => (
                 <div key={stat.label} className="flex flex-col">
                   <span
                     className="text-2xl font-bold"
