@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { ExternalLink, Code2, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
+import SectionHeading from "@/components/ui/SectionHeading";
+import Reveal from "@/components/ui/Reveal";
 import { cn } from "@/lib/utils";
 import {
   fallbackProjects,
@@ -24,8 +26,6 @@ export default function ProjectsSection({
   projects = fallbackProjects,
 }: ProjectsSectionProps) {
   const [activeFilter, setActiveFilter] = useState<FilterCategory>("All");
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
 
   const filtered =
     activeFilter === "All"
@@ -33,229 +33,283 @@ export default function ProjectsSection({
       : projects.filter((p) => p.category.includes(activeFilter));
 
   return (
-    <section
-      id={id}
-      ref={sectionRef}
-      className="relative py-24 lg:py-32 overflow-hidden"
-      style={{ background: "#0d1017" }}
-    >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="mb-10"
-        >
-          <p
-            className="text-sm font-semibold tracking-widest uppercase mb-2"
-            style={{ fontFamily: "var(--font-poppins)", color: "#F2DA00" }}
-          >
-            What I&apos;ve built
-          </p>
-          <h2 className="section-title">Projects</h2>
-        </motion.div>
+    <section id={id} className="section-luxe" style={{ background: "var(--ink-2)" }}>
+      <div className="container-luxe">
+        <SectionHeading
+          eyebrow="Selected Work"
+          index="04"
+          title={
+            <>
+              Things I&apos;ve <span className="gradient-gold">built</span>
+            </>
+          }
+          intro="A handful of projects that I'm proud of — from production platforms to open-source tools."
+        />
 
-        {/* Filter tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="flex flex-wrap gap-2 mb-10"
+        {/* Minimal editorial filter — text with animated gold underline */}
+        <Reveal
+          delay={0.1}
+          className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-3"
         >
-          {FILTER_TABS.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveFilter(tab)}
-              className={cn(
-                "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer",
-                activeFilter === tab
-                  ? "text-navy"
-                  : "bg-white/[0.04] border border-white/[0.08] text-white/50 hover:text-white hover:bg-white/[0.07]"
-              )}
-              style={{
-                fontFamily: "var(--font-poppins)",
-                ...(activeFilter === tab
-                  ? {
-                      background: "#F2DA00",
-                      border: "1px solid #F2DA00",
-                    }
-                  : {}),
-              }}
-            >
-              {tab}
-            </button>
-          ))}
-        </motion.div>
-
-        {/* Projects grid */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeFilter}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-5"
-          >
-            {filtered.map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.5,
-                  ease: [0.25, 0.46, 0.45, 0.94],
-                  delay: index * 0.08,
-                }}
+          {FILTER_TABS.map((tab) => {
+            const active = activeFilter === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveFilter(tab)}
                 className={cn(
-                  "group glass-card overflow-hidden flex flex-col",
-                  project.featured && "md:col-span-2"
+                  "relative cursor-pointer pb-1 text-sm transition-colors duration-300",
+                  active ? "text-[#faf8f4]" : "text-muted-luxe hover:text-soft"
                 )}
+                style={{
+                  fontFamily: "var(--font-poppins)",
+                  letterSpacing: "0.01em",
+                }}
               >
-                {/* Gradient header */}
-                <div
-                  className="relative h-40 overflow-hidden"
-                  style={{
-                    background: `linear-gradient(135deg, ${project.gradientFrom} 0%, ${project.gradientTo} 100%)`,
-                  }}
-                >
-                  {/* Grid pattern overlay */}
-                  <div
-                    className="absolute inset-0 opacity-10"
-                    style={{
-                      backgroundImage: `linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)`,
-                      backgroundSize: "30px 30px",
-                    }}
+                {tab}
+                {active && (
+                  <motion.span
+                    layoutId="project-filter-underline"
+                    className="absolute inset-x-0 -bottom-px h-px"
+                    style={{ background: "var(--gold)" }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                   />
+                )}
+              </button>
+            );
+          })}
+        </Reveal>
 
-                  {/* Badge */}
-                  {project.badge && (
-                    <div className="absolute top-3 right-3">
-                      <span
-                        className="px-2.5 py-1 rounded-full text-xs font-semibold"
-                        style={{
-                          fontFamily: "var(--font-poppins)",
-                          background: "rgba(13,16,23,0.7)",
-                          backdropFilter: "blur(8px)",
-                          color: "white",
-                          border: "1px solid rgba(255,255,255,0.15)",
-                        }}
-                      >
-                        {project.badge}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <span
-                      className="flex items-center gap-2 text-white font-semibold text-sm"
-                      style={{ fontFamily: "var(--font-poppins)" }}
-                    >
-                      View Project
-                      <ArrowRight size={16} />
-                    </span>
-                  </div>
-
-                  {/* Category tags on image */}
-                  <div className="absolute bottom-3 left-3 flex gap-1.5">
-                    {project.category.map((cat) => (
-                      <span
-                        key={cat}
-                        className="px-2 py-0.5 rounded-full text-xs font-medium"
-                        style={{
-                          fontFamily: "var(--font-poppins)",
-                          background: "rgba(13,16,23,0.65)",
-                          backdropFilter: "blur(6px)",
-                          color: "rgba(255,255,255,0.8)",
-                        }}
-                      >
-                        {cat}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="flex flex-col flex-1 p-6">
-                  <h3
-                    className="text-lg font-semibold text-white mb-2 group-hover:text-soft-purple transition-colors"
-                    style={{ fontFamily: "var(--font-poppins)" }}
-                  >
-                    {project.title}
-                  </h3>
-                  <p
-                    className="text-white/55 text-sm leading-relaxed mb-4 flex-1"
-                    style={{ fontFamily: "var(--font-raleway)" }}
-                  >
-                    {project.description}
-                  </p>
-
-                  {/* Tech tags */}
-                  <div className="flex flex-wrap gap-1.5 mb-5">
-                    {project.tech.map((tag) => (
-                      <span key={tag} className="tech-tag">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Links */}
-                  <div className="flex items-center gap-3 pt-4 border-t border-white/[0.06]">
-                    {project.liveUrl && (
-                      <a
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 text-xs font-medium text-white/60 hover:text-yellow transition-colors"
-                        style={{ fontFamily: "var(--font-poppins)" }}
-                      >
-                        <ExternalLink size={13} />
-                        Live Demo
-                      </a>
-                    )}
-                    {project.githubUrl && (
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 text-xs font-medium text-white/60 hover:text-white transition-colors"
-                        style={{ fontFamily: "var(--font-poppins)" }}
-                      >
-                        <Code2 size={13} />
-                        GitHub
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* View all link */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="mt-12 flex justify-center"
+        {/* Editorial numbered rows */}
+        <div
+          className="mt-4 border-t"
+          style={{ borderColor: "var(--line)" }}
         >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeFilter}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {filtered.map((project, index) => (
+                <ProjectRow
+                  key={project.id}
+                  project={project}
+                  index={index}
+                />
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* View all */}
+        <Reveal delay={0.1} className="mt-14 flex justify-center">
           <a
             href="https://github.com/tushardhankhar"
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center gap-2 text-white/50 hover:text-white text-sm font-medium transition-colors"
+            className="group inline-flex items-center gap-2 text-sm text-muted-luxe transition-colors hover:text-[var(--gold)]"
             style={{ fontFamily: "var(--font-poppins)" }}
           >
-            View All Projects on GitHub
-            <ArrowRight
-              size={14}
-              className="group-hover:translate-x-1 transition-transform"
+            View all projects on GitHub
+            <ArrowUpRight
+              size={15}
+              className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
             />
           </a>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+
+function ProjectRow({
+  project,
+  index,
+}: {
+  project: Project;
+  index: number;
+}) {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.7,
+        ease: [0.16, 1, 0.3, 1],
+        delay: index * 0.07,
+      }}
+      className={cn(
+        "group grid grid-cols-1 items-center gap-8 border-b py-10 lg:grid-cols-[3rem_1fr_auto]",
+        project.featured && "lg:py-14"
+      )}
+      style={{ borderColor: "var(--line)" }}
+    >
+      {/* index */}
+      <div
+        className="text-faint text-sm tabular-nums lg:pt-1"
+        style={{ fontFamily: "var(--font-poppins)" }}
+      >
+        {String(index + 1).padStart(2, "0")}
+      </div>
+
+      {/* content */}
+      <div className="flex flex-col gap-4 lg:order-2">
+        <div className="flex flex-wrap items-center gap-3">
+          {project.badge && (
+            <span
+              className="text-faint text-[0.62rem] uppercase tracking-[0.22em]"
+              style={{ fontFamily: "var(--font-poppins)" }}
+            >
+              {project.badge}
+            </span>
+          )}
+          {project.category.map((cat) => (
+            <span
+              key={cat}
+              className="text-muted-luxe text-[0.62rem] uppercase tracking-[0.18em]"
+              style={{ fontFamily: "var(--font-poppins)" }}
+            >
+              {cat}
+            </span>
+          ))}
+        </div>
+
+        <a
+          href={project.liveUrl ?? project.githubUrl ?? "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block"
+        >
+          <h3
+            className={cn(
+              "display transition-colors duration-300 group-hover:text-[var(--gold)]",
+              project.featured ? "display-lg" : "display-md"
+            )}
+            style={{ color: "#faf8f4" }}
+          >
+            {project.title}
+          </h3>
+        </a>
+
+        <p
+          className={cn(
+            "text-muted-luxe leading-relaxed",
+            project.featured ? "max-w-2xl text-[1.02rem]" : "max-w-xl text-[0.95rem]"
+          )}
+          style={{ fontFamily: "var(--font-raleway)" }}
+        >
+          {project.description}
+        </p>
+
+        <div className="flex flex-wrap gap-2">
+          {project.tech.map((tag) => (
+            <span key={tag} className="tech-tag">
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        {/* text links */}
+        <div
+          className="mt-1 flex items-center gap-6 text-sm"
+          style={{ fontFamily: "var(--font-poppins)" }}
+        >
+          {project.liveUrl && (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-soft transition-colors hover:text-[var(--gold)]"
+            >
+              Live <ArrowUpRight size={14} />
+            </a>
+          )}
+          {project.githubUrl && (
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-soft transition-colors hover:text-[var(--gold)]"
+            >
+              Code <ArrowUpRight size={14} />
+            </a>
+          )}
+        </div>
+      </div>
+
+      {/* visual — cover image or refined gradient block */}
+      <a
+        href={project.liveUrl ?? project.githubUrl ?? "#"}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn(
+          "group/vis relative block overflow-hidden rounded-xl lg:order-3",
+          project.featured
+            ? "aspect-[16/10] w-full lg:w-[22rem]"
+            : "aspect-[16/10] w-full lg:w-64"
+        )}
+        style={{ border: "1px solid var(--line)" }}
+        aria-label={`View ${project.title}`}
+      >
+        {project.coverImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={project.coverImage}
+            alt={project.title}
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          />
+        ) : (
+          <span
+            className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.04]"
+            style={{
+              background: `linear-gradient(135deg, ${project.gradientFrom}, ${project.gradientTo})`,
+              opacity: 0.6,
+            }}
+          />
+        )}
+
+        {/* subtle grid overlay */}
+        <span
+          aria-hidden
+          className="absolute inset-0 opacity-[0.08]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+            backgroundSize: "26px 26px",
+          }}
+        />
+
+        {/* darkening wash for depth */}
+        <span
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, transparent 40%, rgba(8,9,12,0.55) 100%)",
+          }}
+        />
+
+        {/* hover affordance */}
+        <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <span
+            className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs"
+            style={{
+              fontFamily: "var(--font-poppins)",
+              background: "rgba(8,9,12,0.6)",
+              border: "1px solid var(--line-strong)",
+              color: "#faf8f4",
+              backdropFilter: "blur(6px)",
+            }}
+          >
+            View <ArrowUpRight size={13} />
+          </span>
+        </span>
+      </a>
+    </motion.article>
   );
 }

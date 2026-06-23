@@ -1,9 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, ArrowRight, Download } from "lucide-react";
+import dynamic from "next/dynamic";
 import gsap from "gsap";
+import MagneticButton from "@/components/ui/MagneticButton";
+import { cn } from "@/lib/utils";
 import { fallbackSiteSettings, type SiteSettings } from "@/data/fallback";
+
+/** 3D particle sphere — client-only, fades in as a faint ambient layer. */
+const HeroCanvas = dynamic(() => import("@/components/three/HeroCanvas"), {
+  ssr: false,
+  loading: () => null,
+});
 
 interface HeroSectionProps {
   id?: string;
@@ -20,7 +28,6 @@ export default function HeroSection({
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isTyping, setIsTyping] = useState(true);
-  const heroRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Typewriter effect
@@ -34,7 +41,6 @@ export default function HeroSection({
           setDisplayText(role.slice(0, displayText.length + 1));
         }, 60);
       } else {
-        // Pause before erasing
         timeout = setTimeout(() => setIsTyping(false), 2000);
       }
     } else {
@@ -49,11 +55,14 @@ export default function HeroSection({
     }
 
     return () => clearTimeout(timeout);
-  }, [displayText, isTyping, currentRoleIndex]);
+  }, [displayText, isTyping, currentRoleIndex, ROLES]);
 
-  // GSAP entrance animation
+  // GSAP staggered entrance for the left content
   useEffect(() => {
     if (!contentRef.current) return;
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
 
     const ctx = gsap.context(() => {
       const children = contentRef.current?.querySelectorAll("[data-animate]");
@@ -61,14 +70,14 @@ export default function HeroSection({
 
       gsap.fromTo(
         children,
-        { opacity: 0, y: 40 },
+        { opacity: 0, y: 28 },
         {
           opacity: 1,
           y: 0,
-          duration: 0.8,
-          stagger: 0.12,
-          ease: "power3.out",
-          delay: 0.2,
+          duration: 0.9,
+          stagger: 0.1,
+          ease: "expo.out",
+          delay: 0.15,
         }
       );
     }, contentRef);
@@ -76,179 +85,151 @@ export default function HeroSection({
     return () => ctx.revert();
   }, []);
 
-  const scrollToWork = () => {
-    const el = document.getElementById("work");
-    if (el) {
-      const lenis = (window as unknown as { lenis?: { scrollTo: (target: Element, opts?: object) => void } }).lenis;
-      if (lenis) {
-        lenis.scrollTo(el, { offset: -80 });
-      } else {
-        el.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
-
-  const scrollDown = () => {
-    const el = document.getElementById("about");
-    if (el) {
-      const lenis = (window as unknown as { lenis?: { scrollTo: (target: Element, opts?: object) => void } }).lenis;
-      if (lenis) {
-        lenis.scrollTo(el, { offset: -80 });
-      } else {
-        el.scrollIntoView({ behavior: "smooth" });
-      }
+  const scrollTo = (targetId: string) => {
+    const el = document.getElementById(targetId);
+    if (!el) return;
+    const lenis = (window as unknown as {
+      lenis?: { scrollTo: (target: Element, opts?: object) => void };
+    }).lenis;
+    if (lenis) {
+      lenis.scrollTo(el, { offset: -80 });
+    } else {
+      el.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   return (
     <section
       id={id}
-      ref={heroRef}
       className="relative min-h-[100dvh] flex items-center overflow-hidden"
-      style={{ background: "#0d1017" }}
+      style={{ background: "var(--ink)" }}
     >
-      {/* Background grid */}
+      {/* Soft radial brand glow behind the canvas */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage: `linear-gradient(rgba(134,71,151,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(134,71,151,0.5) 1px, transparent 1px)`,
-          backgroundSize: "60px 60px",
+          background:
+            "radial-gradient(720px 720px at 76% 38%, rgba(134,71,151,0.12), transparent 62%)",
         }}
       />
 
-      {/* Background glow spots */}
+      {/* 3D particle sphere — ambient, edge-faded, behind content on small screens */}
       <div
-        className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-[0.08] blur-3xl"
-        style={{ background: "#864797" }}
-      />
-      <div
-        className="absolute bottom-1/4 right-1/3 w-64 h-64 rounded-full opacity-[0.06] blur-3xl"
-        style={{ background: "#0CC0DF" }}
-      />
+        aria-hidden
+        className="absolute inset-0 lg:inset-y-0 lg:left-auto lg:right-0 lg:w-[52%] pointer-events-none"
+        style={{
+          opacity: 0.78,
+          WebkitMaskImage:
+            "radial-gradient(70% 70% at 60% 45%, #000 38%, transparent 78%)",
+          maskImage:
+            "radial-gradient(70% 70% at 60% 45%, #000 38%, transparent 78%)",
+        }}
+      >
+        <HeroCanvas />
+      </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pt-20">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
-          {/* LEFT — Content (60%) */}
-          <div
-            ref={contentRef}
-            className="flex-1 lg:max-w-[60%] flex flex-col gap-5"
-          >
-            {/* Greeting pill */}
-            <div data-animate className="opacity-0">
-              <span
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium border"
-                style={{
-                  fontFamily: "var(--font-poppins)",
-                  background: "rgba(134,71,151,0.1)",
-                  borderColor: "rgba(134,71,151,0.3)",
-                  color: "#B190C1",
-                }}
-              >
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+      <div className="container-luxe relative z-10 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.55fr)] items-center gap-12">
+          {/* LEFT — content */}
+          <div ref={contentRef} className="flex flex-col gap-7 max-w-2xl">
+            {/* Eyebrow greeting + live availability */}
+            <div
+              data-animate
+              className="opacity-0 flex flex-wrap items-center gap-4"
+            >
+              <span className="eyebrow">{siteSettings.heroGreeting}</span>
+              <span className="inline-flex items-center gap-2 text-[0.72rem] tracking-[0.18em] uppercase text-muted-luxe">
+                <span
+                  className="w-1.5 h-1.5 rounded-full animate-dot-pulse"
+                  style={{ background: "var(--gold)" }}
+                />
                 {siteSettings.availabilityStatus}
               </span>
             </div>
 
-            {/* Greeting text */}
-            <p
-              data-animate
-              className="opacity-0 text-white/60 text-lg"
-              style={{ fontFamily: "var(--font-raleway)" }}
-            >
-              {siteSettings.heroGreeting}
-            </p>
-
-            {/* Name */}
+            {/* Name — oversized display, one accent word */}
             <h1
               data-animate
-              className="opacity-0"
-              style={{
-                fontFamily: "var(--font-poppins)",
-                fontWeight: 700,
-                fontSize: "clamp(2.5rem, 7vw, 5rem)",
-                lineHeight: 1.05,
-                background:
-                  "linear-gradient(135deg, #ffffff 0%, #B190C1 60%, #864797 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
+              className="opacity-0 display display-xl"
+              style={{ lineHeight: 0.95, color: "#faf8f4" }}
             >
               {firstName}
               {lastName && (
                 <>
                   <br />
-                  {lastName}
+                  <span className="gradient-text">{lastName}</span>
                 </>
               )}
             </h1>
 
-            {/* Role typewriter */}
+            {/* Role typewriter — small, refined, gold */}
             <div
               data-animate
-              className="opacity-0 flex items-center gap-2 h-10"
+              className="opacity-0 flex items-center gap-1.5 h-7"
               style={{ fontFamily: "var(--font-poppins)" }}
             >
               <span
-                className="text-xl lg:text-2xl font-semibold"
-                style={{ color: "#F2DA00" }}
+                className="text-base lg:text-lg font-medium tracking-tight"
+                style={{ color: "var(--gold)" }}
               >
                 {displayText}
               </span>
               <span
-                className="inline-block w-0.5 h-7 animate-cursor-blink"
-                style={{ background: "#F2DA00" }}
+                className="inline-block w-[2px] h-5 animate-cursor-blink"
+                style={{ background: "var(--gold)" }}
               />
             </div>
 
-            {/* Bio */}
+            {/* Tagline */}
             <p
               data-animate
-              className="opacity-0 text-white/60 text-lg leading-relaxed max-w-lg"
+              className="opacity-0 text-muted-luxe text-[1.05rem] leading-relaxed max-w-[34rem]"
               style={{ fontFamily: "var(--font-raleway)" }}
             >
               {siteSettings.heroTagline}
             </p>
 
-            {/* CTA Buttons */}
-            <div data-animate className="opacity-0 flex flex-wrap gap-4 pt-2">
-              <button onClick={scrollToWork} className="btn-primary group">
-                View My Work
-                <ArrowRight
-                  size={16}
-                  className="transition-transform group-hover:translate-x-1"
-                />
-              </button>
-              <a
-                href={siteSettings.resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-outline-white"
+            {/* CTAs */}
+            <div data-animate className="opacity-0 flex flex-wrap gap-3 pt-1">
+              <MagneticButton
+                className="btn-primary"
+                onClick={() => scrollTo("work")}
+                ariaLabel="View my work"
               >
-                <Download size={16} />
-                Download Resume
-              </a>
+                View Work
+              </MagneticButton>
+              <MagneticButton
+                className="btn-ghost"
+                href={siteSettings.resumeUrl}
+                external
+                ariaLabel="Open résumé in a new tab"
+              >
+                Résumé ↗
+              </MagneticButton>
             </div>
 
-            {/* Stats row */}
+            {/* Stats row — thin top hairline */}
             <div
               data-animate
-              className="opacity-0 flex flex-wrap gap-8 pt-4 border-t border-white/[0.06]"
+              className="opacity-0 flex flex-wrap gap-x-12 gap-y-5 pt-7"
+              style={{ borderTop: "1px solid var(--line)" }}
             >
               {siteSettings.stats.map((stat) => (
-                <div key={stat.label} className="flex flex-col">
+                <div key={stat.label} className="flex flex-col gap-1">
                   <span
-                    className="text-2xl font-bold"
+                    className="text-2xl lg:text-3xl tracking-tight"
                     style={{
                       fontFamily: "var(--font-poppins)",
-                      color: "#F2DA00",
+                      fontWeight: 600,
+                      color: "#faf8f4",
                     }}
                   >
                     {stat.value}
                   </span>
                   <span
-                    className="text-sm text-white/50"
-                    style={{ fontFamily: "var(--font-raleway)" }}
+                    className="text-[0.72rem] tracking-[0.12em] uppercase text-faint"
+                    style={{ fontFamily: "var(--font-poppins)" }}
                   >
                     {stat.label}
                   </span>
@@ -257,98 +238,32 @@ export default function HeroSection({
             </div>
           </div>
 
-          {/* RIGHT — Animated blob (40%) */}
-          <div className="lg:w-[40%] flex items-center justify-center">
-            <div className="relative w-72 h-72 lg:w-96 lg:h-96">
-              {/* Outer glow ring */}
-              <div
-                className="absolute inset-0 rounded-full animate-glow-pulse opacity-30"
-                style={{
-                  background:
-                    "radial-gradient(circle, rgba(134,71,151,0.4) 0%, transparent 70%)",
-                }}
-              />
-
-              {/* Blob */}
-              <div
-                className="absolute inset-8 animate-blob-morph animate-blob-float"
-                style={{
-                  background:
-                    "radial-gradient(ellipse at 30% 40%, #864797 0%, #0CC0DF 50%, #2f3342 100%)",
-                  animation:
-                    "blobMorph 8s ease-in-out infinite, blobFloat 6s ease-in-out infinite, blobColorShift 10s ease-in-out infinite",
-                  boxShadow:
-                    "0 0 60px rgba(134,71,151,0.5), 0 0 120px rgba(12,192,223,0.2)",
-                }}
-              />
-
-              {/* Inner highlight */}
-              <div
-                className="absolute inset-16 rounded-full"
-                style={{
-                  background:
-                    "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 60%)",
-                  mixBlendMode: "overlay",
-                }}
-              />
-
-              {/* Floating tech badges */}
-              <div
-                className="absolute -top-4 -right-4 px-3 py-1.5 rounded-full text-xs font-semibold"
-                style={{
-                  fontFamily: "var(--font-poppins)",
-                  background: "rgba(13,16,23,0.9)",
-                  border: "1px solid rgba(242,218,0,0.4)",
-                  color: "#F2DA00",
-                  backdropFilter: "blur(8px)",
-                }}
-              >
-                Next.js 15
-              </div>
-              <div
-                className="absolute -bottom-2 -left-6 px-3 py-1.5 rounded-full text-xs font-semibold"
-                style={{
-                  fontFamily: "var(--font-poppins)",
-                  background: "rgba(13,16,23,0.9)",
-                  border: "1px solid rgba(12,192,223,0.4)",
-                  color: "#0CC0DF",
-                  backdropFilter: "blur(8px)",
-                }}
-              >
-                AI / LLM
-              </div>
-              <div
-                className="absolute top-1/2 -right-8 px-3 py-1.5 rounded-full text-xs font-semibold"
-                style={{
-                  fontFamily: "var(--font-poppins)",
-                  background: "rgba(13,16,23,0.9)",
-                  border: "1px solid rgba(177,144,193,0.4)",
-                  color: "#B190C1",
-                  backdropFilter: "blur(8px)",
-                }}
-              >
-                TypeScript
-              </div>
-            </div>
-          </div>
+          {/* RIGHT column — intentionally empty; the canvas bleeds through here */}
+          <div aria-hidden className="hidden lg:block" />
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Minimal scroll indicator */}
       <button
-        onClick={scrollDown}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 hover:text-white/70 transition-colors cursor-pointer group"
-        aria-label="Scroll down"
+        onClick={() => scrollTo("about")}
+        className={cn(
+          "absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3",
+          "text-faint hover:text-soft transition-colors cursor-pointer group"
+        )}
+        aria-label="Scroll to next section"
       >
         <span
-          className="text-xs tracking-widest uppercase"
-          style={{ fontFamily: "var(--font-poppins)", fontSize: "0.65rem" }}
+          className="text-[0.62rem] tracking-[0.3em] uppercase"
+          style={{ fontFamily: "var(--font-poppins)" }}
         >
-          Scroll to explore
+          Scroll
         </span>
-        <ChevronDown
-          size={20}
-          className="animate-scroll-bounce group-hover:text-yellow"
+        <span
+          className="block w-px h-10 animate-scroll-bounce"
+          style={{
+            background:
+              "linear-gradient(180deg, var(--line-gold), transparent)",
+          }}
         />
       </button>
     </section>

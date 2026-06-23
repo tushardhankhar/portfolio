@@ -3,60 +3,79 @@ import FloatingDock from "@/components/layout/FloatingDock";
 import HeroSection from "@/components/sections/HeroSection";
 import AboutSection from "@/components/sections/AboutSection";
 import ExperienceSection from "@/components/sections/ExperienceSection";
+import SkillsSection from "@/components/sections/SkillsSection";
 import ProjectsSection from "@/components/sections/ProjectsSection";
 import ContactSection from "@/components/sections/ContactSection";
+import GrainOverlay from "@/components/ui/GrainOverlay";
+import ScrollProgress from "@/components/ui/ScrollProgress";
+import CustomCursor from "@/components/ui/CustomCursor";
 import {
   getAbout,
   getExperiences,
   getProjects,
   getSiteSettings,
+  getSkills,
 } from "@/lib/sanity-fetch";
+import { getGitHubData, githubUsernameFrom } from "@/lib/github";
 
 export default async function Home() {
-  const [projects, experiences, about, siteSettings] = await Promise.all([
+  const [projects, experiences, about, siteSettings, skills] = await Promise.all([
     getProjects(),
     getExperiences(),
     getAbout(),
     getSiteSettings(),
+    getSkills(),
   ]);
+
+  const github = await getGitHubData(githubUsernameFrom(siteSettings.githubUrl));
 
   return (
     <>
+      <ScrollProgress />
+      <GrainOverlay />
+      <CustomCursor />
       <Navbar />
+
       <main>
         <HeroSection id="hero" siteSettings={siteSettings} />
-        <AboutSection id="about" about={about} />
+        <AboutSection id="about" about={about} github={github} />
         <ExperienceSection
           id="experience"
           experiences={experiences}
           resumeUrl={siteSettings.resumeUrl}
         />
+        <SkillsSection id="skills" skills={skills} />
         <ProjectsSection id="work" projects={projects} />
         <ContactSection id="contact" siteSettings={siteSettings} about={about} />
       </main>
+
       <FloatingDock />
 
       {/* Footer */}
       <footer
-        className="border-t py-8 text-center"
-        style={{
-          borderColor: "rgba(255,255,255,0.06)",
-          background: "#0d1017",
-        }}
+        className="section-luxe !py-14"
+        style={{ borderTop: "1px solid var(--line)", background: "var(--ink)" }}
       >
-        <p
-          className="text-sm text-white/30"
-          style={{ fontFamily: "var(--font-raleway)" }}
-        >
-          Designed &amp; built by{" "}
-          <span
-            className="font-semibold"
-            style={{ color: "#B190C1", fontFamily: "var(--font-poppins)" }}
+        <div className="container-luxe flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p
+            className="text-sm text-faint"
+            style={{ fontFamily: "var(--font-raleway)" }}
           >
-            {siteSettings.name}
-          </span>{" "}
-          · Built with Next.js 15 &amp; Tailwind CSS
-        </p>
+            © {new Date().getFullYear()}{" "}
+            <span
+              className="text-soft"
+              style={{ fontFamily: "var(--font-poppins)" }}
+            >
+              {siteSettings.name}
+            </span>
+          </p>
+          <p
+            className="text-xs text-faint tracking-wide"
+            style={{ fontFamily: "var(--font-poppins)" }}
+          >
+            Designed &amp; built with Next.js · Three.js · Sanity
+          </p>
+        </div>
       </footer>
     </>
   );

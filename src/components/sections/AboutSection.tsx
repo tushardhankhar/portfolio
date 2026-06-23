@@ -1,273 +1,256 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { MapPin, Briefcase, Zap, Coffee, Quote } from "lucide-react";
+import SectionHeading from "@/components/ui/SectionHeading";
+import Reveal from "@/components/ui/Reveal";
+import GitHubHeatmap from "@/components/ui/GitHubHeatmap";
 import { cn } from "@/lib/utils";
 import { fallbackAbout, type AboutContent } from "@/data/fallback";
+import type { GitHubData } from "@/lib/github";
 
 interface AboutSectionProps {
   id?: string;
   about?: AboutContent;
+  github?: GitHubData | null;
 }
 
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
+function initialsOf(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "TD";
+  const first = parts[0]?.[0] ?? "";
+  const last = parts.length > 1 ? parts[parts.length - 1]?.[0] ?? "" : "";
+  return (first + last).toUpperCase() || "TD";
+}
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
-  },
-};
+/** Compact number formatter for stats (e.g. 1.2k). */
+function fmt(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k`;
+  return String(n);
+}
 
 export default function AboutSection({
   id,
   about = fallbackAbout,
+  github,
 }: AboutSectionProps) {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
+  const monogram = initialsOf("Tushar Dhankhar");
+
+  const stats: { value: string; label: string }[] = [];
+  if (github) {
+    if (github.totalContributions)
+      stats.push({ value: fmt(github.totalContributions), label: "Contributions" });
+    if (github.publicRepos !== null)
+      stats.push({ value: fmt(github.publicRepos), label: "Repositories" });
+    if (github.followers !== null)
+      stats.push({ value: fmt(github.followers), label: "Followers" });
+    if (github.totalStars !== null)
+      stats.push({ value: fmt(github.totalStars), label: "Stars" });
+  }
 
   return (
-    <section
-      id={id}
-      ref={sectionRef}
-      className="relative py-24 lg:py-32 overflow-hidden"
-      style={{ background: "#0d1017" }}
-    >
-      {/* Background accent */}
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24 opacity-30"
-        style={{
-          background: "linear-gradient(to bottom, transparent, #864797)",
-        }}
-      />
+    <section id={id} className="section-luxe overflow-hidden">
+      <div className="container-luxe">
+        <SectionHeading
+          eyebrow="About"
+          index="01"
+          title={about.heading}
+          className="mb-14 lg:mb-20"
+        />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="mb-12"
-        >
-          <p
-            className="text-sm font-semibold tracking-widest uppercase mb-2"
-            style={{ fontFamily: "var(--font-poppins)", color: "#F2DA00" }}
-          >
-            Get to know me
-          </p>
-          <h2 className="section-title">{about.heading}</h2>
-        </motion.div>
+        {/* Editorial bento — few, large cells, generous negative space */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
+          {/* Bio — large, spans most of the width */}
+          <Reveal className="lg:col-span-8" delay={0.05}>
+            <div className="surface surface-hover h-full p-8 lg:p-12 flex flex-col sm:flex-row gap-8 lg:gap-10">
+              {/* Avatar or monogram */}
+              <div className="flex-shrink-0">
+                {about.avatar ? (
+                  <div className="relative w-20 h-20 lg:w-24 lg:h-24 rounded-2xl overflow-hidden border border-[color:var(--line-strong)]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={about.avatar}
+                      alt="Portrait"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="w-20 h-20 lg:w-24 lg:h-24 rounded-2xl flex items-center justify-center text-2xl lg:text-3xl border border-[color:var(--line-strong)] bg-white/[0.02]"
+                    style={{
+                      fontFamily: "var(--font-poppins)",
+                      fontWeight: 600,
+                      letterSpacing: "-0.03em",
+                      color: "var(--gold)",
+                    }}
+                  >
+                    {monogram}
+                  </div>
+                )}
+              </div>
 
-        {/* Bento Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-        >
-          {/* Large Bio Card — spans 2 columns */}
-          <motion.div
-            variants={cardVariants}
-            className={cn(
-              "glass-card p-6 lg:p-8 lg:col-span-2",
-              "flex flex-col sm:flex-row gap-6"
-            )}
+              {/* Bio column */}
+              <div className="flex flex-col gap-5 max-w-2xl">
+                {about.bio.map((paragraph, i) => (
+                  <p
+                    key={i}
+                    className={cn(
+                      "leading-[1.85] text-[1.02rem]",
+                      i === 0 ? "text-soft" : "text-muted-luxe"
+                    )}
+                    style={{ fontFamily: "var(--font-raleway)" }}
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Detail cell — location + availability */}
+          <Reveal className="lg:col-span-4" delay={0.12}>
+            <div className="surface surface-hover h-full p-8 flex flex-col gap-8">
+              <div className="flex flex-col gap-2">
+                <span className="eyebrow">Based in</span>
+                <div className="flex items-center gap-2.5">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: "var(--gold)" }}
+                  />
+                  <span
+                    className="text-soft text-[1.05rem]"
+                    style={{ fontFamily: "var(--font-poppins)", fontWeight: 500 }}
+                  >
+                    {about.location}
+                  </span>
+                </div>
+              </div>
+
+              <div className="hairline" />
+
+              <div className="flex flex-col gap-4">
+                <span className="eyebrow">Availability</span>
+                {about.availableForWork && (
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full animate-dot-pulse"
+                      style={{ background: "var(--gold)" }}
+                    />
+                    <span
+                      className="text-soft text-sm"
+                      style={{ fontFamily: "var(--font-poppins)", fontWeight: 500 }}
+                    >
+                      Available for work
+                    </span>
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {about.availabilityTags.map((tag) => (
+                    <span key={tag} className="tech-tag">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* GitHub cell (if data) — heatmap + stats */}
+          {github ? (
+            <Reveal className="lg:col-span-7" delay={0.18}>
+              <div className="surface surface-hover h-full p-8 lg:p-10 flex flex-col gap-6">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="eyebrow">Open Source</span>
+                  <span
+                    className="text-faint text-xs tracking-wide"
+                    style={{ fontFamily: "var(--font-poppins)" }}
+                  >
+                    @{github.username}
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <GitHubHeatmap weeks={github.weeks} />
+                </div>
+
+                {stats.length > 0 && (
+                  <>
+                    <div className="hairline-gold" />
+                    <div className="flex flex-wrap gap-x-10 gap-y-5">
+                      {stats.map((s) => (
+                        <div key={s.label} className="flex flex-col gap-1">
+                          <span
+                            className="text-2xl lg:text-3xl text-[#faf8f4]"
+                            style={{
+                              fontFamily: "var(--font-poppins)",
+                              fontWeight: 600,
+                              letterSpacing: "-0.03em",
+                            }}
+                          >
+                            {s.value}
+                          </span>
+                          <span className="text-faint text-xs uppercase tracking-[0.18em]">
+                            {s.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </Reveal>
+          ) : null}
+
+          {/* Philosophy pull-quote */}
+          <Reveal
+            className={cn(github ? "lg:col-span-5" : "lg:col-span-7")}
+            delay={0.24}
           >
-            {/* Avatar */}
-            <div className="flex-shrink-0">
-              <div
-                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl flex items-center justify-center text-3xl font-bold"
+            <div className="surface h-full p-8 lg:p-10 flex flex-col justify-center relative overflow-hidden">
+              <span
+                aria-hidden
+                className="absolute -top-8 -left-2 select-none pointer-events-none leading-none"
                 style={{
                   fontFamily: "var(--font-poppins)",
-                  background: "linear-gradient(135deg, #864797 0%, #0CC0DF 100%)",
-                  boxShadow: "0 0 30px rgba(134,71,151,0.4)",
-                  color: "white",
+                  fontWeight: 700,
+                  fontSize: "11rem",
+                  color: "var(--gold)",
+                  opacity: 0.08,
                 }}
               >
-                TD
-              </div>
-            </div>
-
-            {/* Bio text */}
-            <div className="flex flex-col gap-3">
-              <h3
-                className="text-xl font-semibold text-white"
-                style={{ fontFamily: "var(--font-poppins)" }}
-              >
-                Senior Full Stack Engineer
-              </h3>
-              {about.bio.map((paragraph, i) => (
-                <p
-                  key={i}
-                  className="text-white/60 leading-relaxed text-sm"
-                  style={{ fontFamily: "var(--font-raleway)" }}
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Location Card */}
-          <motion.div
-            variants={cardVariants}
-            className="glass-card p-6 flex flex-col gap-4"
-          >
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: "rgba(12,192,223,0.15)", color: "#0CC0DF" }}
-            >
-              <MapPin size={18} />
-            </div>
-            <div>
-              <h4
-                className="text-white font-semibold mb-1"
-                style={{ fontFamily: "var(--font-poppins)" }}
-              >
-                {about.location}
-              </h4>
-              <p
-                className="text-white/50 text-sm"
-                style={{ fontFamily: "var(--font-raleway)" }}
-              >
-                IST (UTC+5:30)
-              </p>
-            </div>
-            <div
-              className="mt-auto inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
-              style={{
-                fontFamily: "var(--font-poppins)",
-                background: "rgba(12,192,223,0.1)",
-                border: "1px solid rgba(12,192,223,0.25)",
-                color: "#0CC0DF",
-              }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-current" />
-              Open to remote
-            </div>
-          </motion.div>
-
-          {/* Availability Card */}
-          <motion.div
-            variants={cardVariants}
-            className="glass-card p-6 flex flex-col gap-4"
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{
-                  background: "rgba(134,71,151,0.15)",
-                  color: "#B190C1",
-                }}
-              >
-                <Briefcase size={18} />
-              </div>
-              <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
-            </div>
-            <div>
-              <h4
-                className="text-white font-semibold mb-1"
-                style={{ fontFamily: "var(--font-poppins)" }}
-              >
-                Available for Opportunities
-              </h4>
-              <p
-                className="text-white/50 text-sm mb-3"
-                style={{ fontFamily: "var(--font-raleway)" }}
-              >
-                Currently exploring new roles
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {about.availabilityTags.map((tag) => (
-                <span key={tag} className="tech-tag">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Fun Fact Card */}
-          <motion.div
-            variants={cardVariants}
-            className="glass-card p-6 flex flex-col gap-4"
-          >
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: "rgba(242,218,0,0.1)", color: "#F2DA00" }}
-            >
-              <Coffee size={18} />
-            </div>
-            <h4
-              className="text-white font-semibold"
-              style={{ fontFamily: "var(--font-poppins)" }}
-            >
-              Fun Facts
-            </h4>
-            <ul className="flex flex-col gap-2">
-              {about.funFacts.map((fact) => (
-                <li
-                  key={fact}
-                  className="text-sm text-white/60 leading-relaxed"
-                  style={{ fontFamily: "var(--font-raleway)" }}
-                >
-                  {fact}
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* Tech Philosophy Card */}
-          <motion.div
-            variants={cardVariants}
-            className="glass-card p-6 flex flex-col gap-4 relative overflow-hidden"
-          >
-            {/* Background quote mark */}
-            <div
-              className="absolute -top-2 -right-2 text-8xl font-bold opacity-[0.04] pointer-events-none select-none"
-              style={{ fontFamily: "var(--font-poppins)", color: "#864797" }}
-            >
-              &quot;
-            </div>
-
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{
-                background: "rgba(177,144,193,0.15)",
-                color: "#B190C1",
-              }}
-            >
-              <Zap size={18} />
-            </div>
-            <blockquote>
-              <p
-                className="text-white/70 text-sm leading-relaxed italic"
-                style={{ fontFamily: "var(--font-raleway)" }}
-              >
-                &quot;{about.philosophy}&quot;
-              </p>
-            </blockquote>
-            <div className="mt-auto flex items-center gap-2">
-              <Quote size={12} className="text-white/30" />
-              <span
-                className="text-xs text-white/40"
-                style={{ fontFamily: "var(--font-poppins)" }}
-              >
-                My engineering philosophy
+                &ldquo;
               </span>
+              <blockquote
+                className="relative text-[1.35rem] lg:text-[1.6rem] leading-[1.4] text-[#faf8f4]"
+                style={{
+                  fontFamily: "var(--font-poppins)",
+                  fontWeight: 500,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {about.philosophy}
+              </blockquote>
             </div>
-          </motion.div>
-        </motion.div>
+          </Reveal>
+
+          {/* Fun facts — quiet ticker / muted list */}
+          {about.funFacts.length > 0 && (
+            <Reveal className={cn(github ? "lg:col-span-12" : "lg:col-span-5")} delay={0.3}>
+              <div className="surface h-full px-8 py-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8">
+                <span className="eyebrow shrink-0">Off the clock</span>
+                <ul className="flex flex-wrap gap-x-8 gap-y-2">
+                  {about.funFacts.map((fact) => (
+                    <li
+                      key={fact}
+                      className="text-muted-luxe text-sm"
+                      style={{ fontFamily: "var(--font-raleway)" }}
+                    >
+                      {fact}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+          )}
+        </div>
       </div>
     </section>
   );

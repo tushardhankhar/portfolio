@@ -74,7 +74,7 @@ export default function RootLayout({
       className={`${poppins.variable} ${raleway.variable} h-full`}
       suppressHydrationWarning
     >
-      <body className="min-h-full antialiased bg-dark-bg text-white">
+      <body className="min-h-full antialiased">
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>
     </html>

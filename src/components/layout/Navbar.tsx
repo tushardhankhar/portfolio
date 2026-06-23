@@ -1,147 +1,190 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Menu, X, Download } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { label: "About", href: "#about" },
-  { label: "Work", href: "#work" },
+  { label: "Experience", href: "#experience" },
   { label: "Skills", href: "#skills" },
+  { label: "Work", href: "#work" },
   { label: "Contact", href: "#contact" },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [active, setActive] = useState<string>("");
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Active-section highlight via IntersectionObserver
+  useEffect(() => {
+    const ids = NAV_LINKS.map((l) => l.href.slice(1));
+    const els = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
+    if (!els.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]) setActive(`#${visible[0].target.id}`);
+      },
+      { rootMargin: "-45% 0px -50% 0px", threshold: [0, 0.25, 0.5] }
+    );
+
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
   const scrollToSection = useCallback((href: string) => {
     setMobileOpen(false);
     const id = href.replace("#", "");
     const el = document.getElementById(id);
-    if (el) {
-      const lenis = (window as unknown as { lenis?: { scrollTo: (target: Element, opts?: object) => void } }).lenis;
-      if (lenis) {
-        lenis.scrollTo(el, { offset: -80 });
-      } else {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+    if (!el) return;
+    const lenis = (window as unknown as {
+      lenis?: { scrollTo: (target: Element, opts?: object) => void };
+    }).lenis;
+    if (lenis) {
+      lenis.scrollTo(el, { offset: -80 });
+    } else {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, []);
 
   return (
-    <>
-      <header
-        className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-          scrolled
-            ? "bg-[#0d1017]/90 backdrop-blur-xl border-b border-white/[0.06] shadow-lg shadow-black/20"
-            : "bg-transparent"
-        )}
-      >
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-18">
-            {/* Logo */}
-            <button
-              onClick={() => scrollToSection("#hero")}
-              className="flex items-center gap-2 group cursor-pointer"
-              aria-label="Go to top"
+    <header
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+        scrolled
+          ? "bg-[rgba(8,9,12,0.72)] backdrop-blur-xl border-b border-[color:var(--line)]"
+          : "bg-transparent border-b border-transparent"
+      )}
+      style={{ transitionTimingFunction: "var(--ease-luxe)" }}
+    >
+      <div className="container-luxe">
+        <div className="flex items-center justify-between h-16 lg:h-20">
+          {/* Wordmark */}
+          <button
+            onClick={() => scrollToSection("#hero")}
+            className="group cursor-pointer flex items-baseline gap-2"
+            aria-label="Go to top"
+          >
+            <span
+              className="text-[#faf8f4] text-lg leading-none transition-colors group-hover:text-white"
+              style={{
+                fontFamily: "var(--font-poppins)",
+                fontWeight: 600,
+                letterSpacing: "-0.04em",
+              }}
             >
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold text-white transition-all duration-300 group-hover:scale-105"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #864797 0%, #0CC0DF 100%)",
-                  boxShadow: "0 0 16px rgba(134,71,151,0.4)",
-                }}
-              >
-                TD
-              </div>
-              <span
-                className="hidden sm:block font-semibold text-white/80 group-hover:text-white transition-colors"
-                style={{ fontFamily: "var(--font-poppins)" }}
-              >
-                Tushar
-              </span>
-            </button>
+              Tushar Dhankhar
+            </span>
+            <span
+              className="hidden sm:inline-block w-1.5 h-1.5 rounded-full transition-colors"
+              style={{ background: "var(--gold)" }}
+            />
+          </button>
 
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-1">
-              {NAV_LINKS.map((link) => (
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-7 lg:gap-9">
+            {NAV_LINKS.map((link) => {
+              const isActive = active === link.href;
+              return (
                 <button
                   key={link.href}
                   onClick={() => scrollToSection(link.href)}
-                  className="relative px-4 py-2 text-sm font-medium text-white/70 hover:text-white transition-colors duration-200 group cursor-pointer"
-                  style={{ fontFamily: "var(--font-poppins)" }}
+                  className={cn(
+                    "relative cursor-pointer text-xs uppercase transition-colors duration-300 group py-1",
+                    isActive ? "text-[#faf8f4]" : "text-muted-luxe hover:text-[#faf8f4]"
+                  )}
+                  style={{
+                    fontFamily: "var(--font-poppins)",
+                    fontWeight: 500,
+                    letterSpacing: "0.16em",
+                  }}
                 >
                   {link.label}
-                  <span className="absolute bottom-1 left-4 right-4 h-px bg-yellow scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                  <span
+                    className={cn(
+                      "absolute -bottom-0.5 left-0 right-0 h-px origin-left transition-transform duration-500",
+                      isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                    )}
+                    style={{
+                      background: "var(--gold)",
+                      transitionTimingFunction: "var(--ease-luxe)",
+                    }}
+                  />
                 </button>
-              ))}
-              <a
-                href="/Tushar_Dhankhar_Resume.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ml-4 flex items-center gap-2 px-4 py-2 text-sm font-semibold border border-yellow/70 text-yellow rounded-lg hover:bg-yellow/10 transition-all duration-200 hover:border-yellow"
-                style={{ fontFamily: "var(--font-poppins)" }}
-              >
-                <Download size={14} />
-                Resume
-              </a>
-            </nav>
-
-            {/* Mobile Menu Button */}
+              );
+            })}
             <button
-              className="md:hidden p-2 text-white/70 hover:text-white transition-colors"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Toggle menu"
+              onClick={() => scrollToSection("#contact")}
+              className="btn btn-ghost ml-1"
             >
-              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+              Let&apos;s talk
             </button>
-          </div>
-        </div>
-
-        {/* Mobile Nav */}
-        <div
-          className={cn(
-            "md:hidden transition-all duration-300 overflow-hidden border-t border-white/[0.06]",
-            mobileOpen
-              ? "max-h-80 opacity-100 bg-[#0d1017]/95 backdrop-blur-xl"
-              : "max-h-0 opacity-0"
-          )}
-        >
-          <nav className="px-6 py-4 flex flex-col gap-1">
-            {NAV_LINKS.map((link) => (
-              <button
-                key={link.href}
-                onClick={() => scrollToSection(link.href)}
-                className="text-left px-3 py-3 text-sm font-medium text-white/70 hover:text-white hover:bg-white/[0.04] rounded-lg transition-all duration-200 cursor-pointer"
-                style={{ fontFamily: "var(--font-poppins)" }}
-              >
-                {link.label}
-              </button>
-            ))}
-            <a
-              href="/Tushar_Dhankhar_Resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 flex items-center gap-2 px-3 py-3 text-sm font-semibold text-yellow border border-yellow/50 rounded-lg hover:bg-yellow/10 transition-all duration-200"
-              style={{ fontFamily: "var(--font-poppins)" }}
-            >
-              <Download size={14} />
-              Download Resume
-            </a>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 text-muted-luxe hover:text-[#faf8f4] transition-colors"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
-      </header>
-    </>
+      </div>
+
+      {/* Mobile Nav */}
+      <div
+        className={cn(
+          "md:hidden overflow-hidden transition-all duration-500",
+          mobileOpen
+            ? "max-h-96 opacity-100 bg-[rgba(8,9,12,0.92)] backdrop-blur-xl border-t border-[color:var(--line)]"
+            : "max-h-0 opacity-0"
+        )}
+        style={{ transitionTimingFunction: "var(--ease-luxe)" }}
+      >
+        <nav className="container-luxe py-6 flex flex-col">
+          {NAV_LINKS.map((link, i) => (
+            <button
+              key={link.href}
+              onClick={() => scrollToSection(link.href)}
+              className={cn(
+                "text-left py-4 text-sm uppercase transition-colors duration-300 cursor-pointer",
+                i !== 0 && "border-t border-[color:var(--line)]",
+                active === link.href
+                  ? "text-[#faf8f4]"
+                  : "text-muted-luxe hover:text-[#faf8f4]"
+              )}
+              style={{
+                fontFamily: "var(--font-poppins)",
+                fontWeight: 500,
+                letterSpacing: "0.16em",
+              }}
+            >
+              {link.label}
+            </button>
+          ))}
+          <button
+            onClick={() => scrollToSection("#contact")}
+            className="btn btn-ghost mt-5 self-start"
+          >
+            Let&apos;s talk
+          </button>
+        </nav>
+      </div>
+    </header>
   );
 }

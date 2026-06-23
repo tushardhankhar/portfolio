@@ -36,9 +36,7 @@ export default function FloatingDock() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setVisible(window.scrollY > 300);
-    };
+    const handleScroll = () => setVisible(window.scrollY > 300);
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
@@ -47,13 +45,21 @@ export default function FloatingDock() {
   return (
     <aside
       className={cn(
-        "fixed right-6 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-3 transition-all duration-500",
-        visible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12 pointer-events-none"
+        "fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden sm:flex flex-col items-center gap-4 transition-all duration-700",
+        visible
+          ? "opacity-100 translate-x-0"
+          : "opacity-0 translate-x-8 pointer-events-none"
       )}
+      style={{ transitionTimingFunction: "var(--ease-luxe)" }}
       aria-label="Social links"
     >
-      {/* Top decorative line */}
-      <div className="w-px h-12 bg-gradient-to-b from-transparent to-white/20" />
+      {/* Top hairline */}
+      <div
+        className="w-px h-14"
+        style={{
+          background: "linear-gradient(to bottom, transparent, var(--line-strong))",
+        }}
+      />
 
       {SOCIAL_LINKS.map((link) => {
         const Icon = link.icon;
@@ -61,18 +67,22 @@ export default function FloatingDock() {
 
         return (
           <div key={link.id} className="relative flex items-center">
-            {/* Label that appears on hover (left side) */}
+            {/* Label on hover */}
             <div
               className={cn(
-                "absolute right-full mr-3 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-200",
-                "bg-[#1a1f2e] border border-white/10 text-white/80",
-                isHovered ? "opacity-100 translate-x-0" : "opacity-0 translate-x-2 pointer-events-none"
+                "absolute right-full mr-3 px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-all duration-300",
+                "bg-[rgba(8,9,12,0.9)] border border-[color:var(--line)] backdrop-blur-md text-soft",
+                isHovered
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 translate-x-1.5 pointer-events-none"
               )}
-              style={{ fontFamily: "var(--font-poppins)" }}
+              style={{
+                fontFamily: "var(--font-poppins)",
+                letterSpacing: "0.04em",
+                transitionTimingFunction: "var(--ease-luxe)",
+              }}
             >
               {link.label}
-              {/* Arrow */}
-              <span className="absolute right-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-[#1a1f2e] border-r border-t border-white/10 rotate-45" />
             </div>
 
             {/* Icon button */}
@@ -81,12 +91,15 @@ export default function FloatingDock() {
               target={link.id !== "email" ? "_blank" : undefined}
               rel={link.id !== "email" ? "noopener noreferrer" : undefined}
               className={cn(
-                "w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer",
-                "bg-white/[0.05] border border-white/[0.08]",
+                "w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 cursor-pointer",
                 isHovered
-                  ? "bg-purple/20 border-purple/40 text-white scale-110 shadow-lg shadow-purple/20"
-                  : "text-white/50 hover:text-white"
+                  ? "border-[color:var(--line-gold)] scale-110 bg-white/[0.03]"
+                  : "border-[color:var(--line)] bg-white/[0.015]"
               )}
+              style={{
+                color: isHovered ? "var(--gold)" : "var(--text-muted)",
+                transitionTimingFunction: "var(--ease-luxe)",
+              }}
               onMouseEnter={() => setHoveredId(link.id)}
               onMouseLeave={() => setHoveredId(null)}
               aria-label={link.label}
@@ -97,8 +110,13 @@ export default function FloatingDock() {
         );
       })}
 
-      {/* Bottom decorative line */}
-      <div className="w-px h-12 bg-gradient-to-b from-white/20 to-transparent" />
+      {/* Bottom hairline */}
+      <div
+        className="w-px h-14"
+        style={{
+          background: "linear-gradient(to bottom, var(--line-strong), transparent)",
+        }}
+      />
     </aside>
   );
 }

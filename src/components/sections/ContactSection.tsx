@@ -1,11 +1,20 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Code2, Link, AtSign, Mail, Send, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  Code2,
+  Link,
+  AtSign,
+  Mail,
+  Send,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
+import SectionHeading from "@/components/ui/SectionHeading";
+import Reveal from "@/components/ui/Reveal";
 import { cn } from "@/lib/utils";
 import {
   fallbackSiteSettings,
@@ -37,35 +46,15 @@ export default function ContactSection({
   about = fallbackAbout,
 }: ContactSectionProps) {
   const SOCIALS = [
-    {
-      label: "GitHub",
-      href: siteSettings.githubUrl,
-      icon: Code2,
-      color: "#e8eaf0",
-    },
-    {
-      label: "LinkedIn",
-      href: siteSettings.linkedinUrl,
-      icon: Link,
-      color: "#0CC0DF",
-    },
-    {
-      label: "Twitter",
-      href: siteSettings.twitterUrl,
-      icon: AtSign,
-      color: "#B190C1",
-    },
-    {
-      label: "Email",
-      href: `mailto:${siteSettings.email}`,
-      icon: Mail,
-      color: "#F2DA00",
-    },
+    { label: "GitHub", href: siteSettings.githubUrl, icon: Code2 },
+    { label: "LinkedIn", href: siteSettings.linkedinUrl, icon: Link },
+    { label: "Twitter", href: siteSettings.twitterUrl, icon: AtSign },
+    { label: "Email", href: `mailto:${siteSettings.email}`, icon: Mail },
   ];
 
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
-  const [submitState, setSubmitState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [submitState, setSubmitState] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   const {
     register,
@@ -96,259 +85,227 @@ export default function ContactSection({
     }
   };
 
+  // shared underline-input classes
+  const fieldBase =
+    "w-full bg-transparent pb-3 pt-2 text-[1.05rem] text-[#faf8f4] placeholder:text-[var(--text-faint)] outline-none transition-colors duration-300 border-b";
+
   return (
-    <section
-      id={id}
-      ref={sectionRef}
-      className="relative py-24 lg:py-32 overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(180deg, #0d1017 0%, #0f1320 100%)",
-      }}
-    >
-      {/* Background glow */}
-      <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] opacity-[0.06] blur-3xl pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse, #864797 0%, #0CC0DF 50%, transparent 100%)",
-        }}
-      />
+    <section id={id} className="section-luxe" style={{ background: "var(--ink)" }}>
+      <div className="container-luxe">
+        <SectionHeading
+          eyebrow="Contact"
+          index="06"
+          title={
+            <>
+              Let&apos;s build <span className="gradient-gold">something</span>
+            </>
+          }
+          intro="Have a project, a role, or just an idea worth talking through? My inbox is open and I usually reply within a day."
+        />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
-        >
-          <p
-            className="text-sm font-semibold tracking-widest uppercase mb-2"
-            style={{ fontFamily: "var(--font-poppins)", color: "#F2DA00" }}
-          >
-            Get in touch
-          </p>
-          <h2
-            className="section-title mx-auto"
-            style={{ display: "inline-block" }}
-          >
-            Let&apos;s Build Something Great
-          </h2>
-          <p
-            className="mt-4 text-white/50 max-w-xl mx-auto"
-            style={{ fontFamily: "var(--font-raleway)" }}
-          >
-            Whether you have a project in mind, a question, or just want to
-            connect — my inbox is always open.
-          </p>
-        </motion.div>
-
-        {/* Content grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
-          {/* Form — 3/5 */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="lg:col-span-3"
-          >
-            <div className="glass-card p-6 lg:p-8">
-              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-                {/* Name */}
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    htmlFor="name"
-                    className="text-sm font-medium text-white/70"
-                    style={{ fontFamily: "var(--font-poppins)" }}
-                  >
-                    Name
-                  </label>
-                  <input
-                    id="name"
-                    type="text"
-                    placeholder="John Doe"
-                    {...register("name")}
-                    className={cn(
-                      "w-full px-4 py-3 rounded-lg text-sm text-white placeholder:text-white/25 outline-none transition-all duration-200",
-                      "bg-white/[0.04] border",
-                      errors.name
-                        ? "border-red-500/60 focus:border-red-500"
-                        : "border-white/[0.08] focus:border-purple/50 focus:bg-white/[0.06]"
-                    )}
-                    style={{ fontFamily: "var(--font-raleway)" }}
-                  />
-                  {errors.name && (
-                    <p className="text-xs text-red-400" style={{ fontFamily: "var(--font-raleway)" }}>
-                      {errors.name.message}
-                    </p>
+        <div className="mt-16 grid grid-cols-1 gap-16 lg:grid-cols-[1.4fr_1fr] lg:gap-20">
+          {/* FORM — underline-style fields */}
+          <Reveal delay={0.05}>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-9"
+            >
+              {/* Name */}
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="name"
+                  className="eyebrow"
+                  style={{ color: "var(--text-faint)" }}
+                >
+                  Name
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Your name"
+                  {...register("name")}
+                  className={cn(
+                    fieldBase,
+                    errors.name
+                      ? "border-red-500/60 focus:border-red-500"
+                      : "border-[var(--line)] focus:border-[var(--gold)]"
                   )}
-                </div>
-
-                {/* Email */}
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    htmlFor="email"
-                    className="text-sm font-medium text-white/70"
-                    style={{ fontFamily: "var(--font-poppins)" }}
-                  >
-                    Email
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    placeholder="john@example.com"
-                    {...register("email")}
-                    className={cn(
-                      "w-full px-4 py-3 rounded-lg text-sm text-white placeholder:text-white/25 outline-none transition-all duration-200",
-                      "bg-white/[0.04] border",
-                      errors.email
-                        ? "border-red-500/60 focus:border-red-500"
-                        : "border-white/[0.08] focus:border-purple/50 focus:bg-white/[0.06]"
-                    )}
+                  style={{ fontFamily: "var(--font-raleway)" }}
+                />
+                {errors.name && (
+                  <p
+                    className="text-xs text-red-400"
                     style={{ fontFamily: "var(--font-raleway)" }}
-                  />
-                  {errors.email && (
-                    <p className="text-xs text-red-400" style={{ fontFamily: "var(--font-raleway)" }}>
-                      {errors.email.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Message */}
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    htmlFor="message"
-                    className="text-sm font-medium text-white/70"
-                    style={{ fontFamily: "var(--font-poppins)" }}
                   >
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    rows={5}
-                    placeholder="Tell me about your project, idea, or just say hi..."
-                    {...register("message")}
-                    className={cn(
-                      "w-full px-4 py-3 rounded-lg text-sm text-white placeholder:text-white/25 outline-none transition-all duration-200 resize-none",
-                      "bg-white/[0.04] border",
-                      errors.message
-                        ? "border-red-500/60 focus:border-red-500"
-                        : "border-white/[0.08] focus:border-purple/50 focus:bg-white/[0.06]"
-                    )}
-                    style={{ fontFamily: "var(--font-raleway)" }}
-                  />
-                  {errors.message && (
-                    <p className="text-xs text-red-400" style={{ fontFamily: "var(--font-raleway)" }}>
-                      {errors.message.message}
-                    </p>
-                  )}
-                </div>
+                    {errors.name.message}
+                  </p>
+                )}
+              </div>
 
-                {/* Submit */}
+              {/* Email */}
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="email"
+                  className="eyebrow"
+                  style={{ color: "var(--text-faint)" }}
+                >
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  {...register("email")}
+                  className={cn(
+                    fieldBase,
+                    errors.email
+                      ? "border-red-500/60 focus:border-red-500"
+                      : "border-[var(--line)] focus:border-[var(--gold)]"
+                  )}
+                  style={{ fontFamily: "var(--font-raleway)" }}
+                />
+                {errors.email && (
+                  <p
+                    className="text-xs text-red-400"
+                    style={{ fontFamily: "var(--font-raleway)" }}
+                  >
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Message */}
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="message"
+                  className="eyebrow"
+                  style={{ color: "var(--text-faint)" }}
+                >
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  rows={4}
+                  placeholder="Tell me about your project, idea, or just say hi…"
+                  {...register("message")}
+                  className={cn(
+                    fieldBase,
+                    "resize-none",
+                    errors.message
+                      ? "border-red-500/60 focus:border-red-500"
+                      : "border-[var(--line)] focus:border-[var(--gold)]"
+                  )}
+                  style={{ fontFamily: "var(--font-raleway)" }}
+                />
+                {errors.message && (
+                  <p
+                    className="text-xs text-red-400"
+                    style={{ fontFamily: "var(--font-raleway)" }}
+                  >
+                    {errors.message.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Submit */}
+              <div className="pt-1">
                 <button
                   type="submit"
-                  disabled={submitState === "loading" || submitState === "success"}
+                  disabled={
+                    submitState === "loading" || submitState === "success"
+                  }
                   className={cn(
-                    "flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg font-semibold text-sm transition-all duration-200",
+                    "btn",
                     submitState === "success"
-                      ? "bg-green-500/20 border border-green-500/40 text-green-400 cursor-not-allowed"
+                      ? "border border-green-500/40 bg-green-500/15 text-green-300"
                       : submitState === "error"
-                      ? "bg-red-500/20 border border-red-500/40 text-red-400 cursor-pointer"
-                      : "btn-primary",
-                    submitState === "loading" && "opacity-70 cursor-not-allowed"
+                        ? "border border-red-500/40 bg-red-500/15 text-red-300"
+                        : "btn-primary",
+                    (submitState === "loading" || submitState === "success") &&
+                      "cursor-not-allowed",
+                    submitState === "loading" && "opacity-70"
                   )}
-                  style={{ fontFamily: "var(--font-poppins)" }}
                 >
                   {submitState === "loading" && (
                     <>
-                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                      Sending...
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      Sending…
                     </>
                   )}
                   {submitState === "success" && (
                     <>
                       <CheckCircle size={16} />
-                      Message Sent!
+                      Message sent
                     </>
                   )}
                   {submitState === "error" && (
                     <>
                       <AlertCircle size={16} />
-                      Try Again
+                      Try again
                     </>
                   )}
                   {submitState === "idle" && (
                     <>
                       <Send size={16} />
-                      Send Message
+                      Send message
                     </>
                   )}
                 </button>
-              </form>
-            </div>
-          </motion.div>
+              </div>
+            </form>
+          </Reveal>
 
-          {/* Info — 2/5 */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="lg:col-span-2 flex flex-col gap-5"
-          >
-            {/* Availability status */}
-            <div className="glass-card p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse" />
+          {/* SIDE — availability + socials as text links */}
+          <Reveal delay={0.15} className="flex flex-col gap-10 lg:pt-2">
+            {/* availability badge */}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2.5">
                 <span
-                  className="text-sm font-semibold text-white"
+                  className="h-2 w-2 rounded-full animate-dot-pulse"
+                  style={{ background: "var(--gold)" }}
+                />
+                <span
+                  className="text-soft text-sm"
                   style={{ fontFamily: "var(--font-poppins)" }}
                 >
-                  Available for Work
+                  {siteSettings.availabilityStatus}
                 </span>
               </div>
-              <p
-                className="text-xs text-white/50 leading-relaxed"
-                style={{ fontFamily: "var(--font-raleway)" }}
-              >
-                Currently open to full-time roles, contract work, and interesting
-                consulting projects. I typically respond within 24 hours.
-              </p>
+              <div className="hairline" />
             </div>
 
-            {/* Contact info */}
-            <div className="glass-card p-5 flex flex-col gap-4">
-              <h4
-                className="text-sm font-semibold text-white"
-                style={{ fontFamily: "var(--font-poppins)" }}
+            {/* direct email */}
+            <div className="flex flex-col gap-2">
+              <span
+                className="eyebrow"
+                style={{ color: "var(--text-faint)" }}
               >
-                Preferred Contact
-              </h4>
+                Email
+              </span>
               <a
                 href={`mailto:${siteSettings.email}`}
-                className="flex items-center gap-3 text-sm text-white/60 hover:text-yellow transition-colors"
+                className="text-[1.05rem] text-soft transition-colors hover:text-[var(--gold)]"
                 style={{ fontFamily: "var(--font-raleway)" }}
               >
-                <Mail size={15} className="flex-shrink-0" />
                 {siteSettings.email}
               </a>
-              <p
-                className="text-xs text-white/35"
+              <span
+                className="text-faint text-xs"
                 style={{ fontFamily: "var(--font-raleway)" }}
               >
                 {about.location} · IST (UTC+5:30)
-              </p>
+              </span>
             </div>
 
-            {/* Social links */}
-            <div className="glass-card p-5">
-              <h4
-                className="text-sm font-semibold text-white mb-4"
-                style={{ fontFamily: "var(--font-poppins)" }}
+            {/* socials as text links */}
+            <div className="flex flex-col gap-3">
+              <span
+                className="eyebrow"
+                style={{ color: "var(--text-faint)" }}
               >
-                Find me online
-              </h4>
-              <div className="flex flex-col gap-2">
+                Elsewhere
+              </span>
+              <div className="flex flex-col">
                 {SOCIALS.map((social) => {
                   const Icon = social.icon;
                   return (
@@ -356,26 +313,25 @@ export default function ContactSection({
                       key={social.label}
                       href={social.href}
                       target={social.label !== "Email" ? "_blank" : undefined}
-                      rel={social.label !== "Email" ? "noopener noreferrer" : undefined}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/50 hover:text-white hover:bg-white/[0.04] transition-all duration-200 group"
+                      rel={
+                        social.label !== "Email"
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
+                      className="group flex items-center gap-3 py-2.5 text-soft transition-colors hover:text-[var(--gold)]"
+                      style={{ fontFamily: "var(--font-poppins)" }}
                     >
                       <Icon
-                        size={16}
-                        className="transition-colors"
-                        style={{ color: social.color }}
+                        size={15}
+                        className="text-faint transition-colors group-hover:text-[var(--gold)]"
                       />
-                      <span
-                        className="text-sm"
-                        style={{ fontFamily: "var(--font-poppins)" }}
-                      >
-                        {social.label}
-                      </span>
+                      <span className="text-sm">{social.label}</span>
                     </a>
                   );
                 })}
               </div>
             </div>
-          </motion.div>
+          </Reveal>
         </div>
       </div>
     </section>
