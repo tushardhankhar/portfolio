@@ -17,10 +17,16 @@ const raleway = Raleway({
   display: "swap",
 });
 
+const SITE_URL = "https://tushardhankhar.com";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Tushar Dhankhar — Full Stack Engineer & AI Builder",
   description:
     "Senior Full Stack Engineer specializing in React, Next.js, Node.js, and AI-powered applications. Building fast, beautiful, and intelligent web experiences.",
+  alternates: {
+    canonical: "/",
+  },
   keywords: [
     "Tushar Dhankhar",
     "Full Stack Engineer",
@@ -36,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://tushardhankhar.dev",
+    url: SITE_URL,
     title: "Tushar Dhankhar — Full Stack Engineer & AI Builder",
     description:
       "Senior Full Stack Engineer specializing in React, Next.js, Node.js, and AI-powered applications.",
@@ -60,6 +66,11 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+  },
+  verification: {
+    // Set GOOGLE_SITE_VERIFICATION in your host env to the token from
+    // Search Console (HTML-tag method). Safe to leave unset.
+    google: process.env.GOOGLE_SITE_VERIFICATION,
   },
 };
 

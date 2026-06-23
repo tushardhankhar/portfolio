@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
                   <p style="font-size: 14px; color: #374151; line-height: 1.7; margin: 0; white-space: pre-wrap;">${message}</p>
                 </div>
                 <p style="margin-top: 24px; font-size: 12px; color: #9ca3af;">
-                  Sent from tushardhankhar.dev portfolio contact form.
+                  Sent from tushardhankhar.com portfolio contact form.
                 </p>
               </div>
             </div>
