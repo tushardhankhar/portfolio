@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Logo from "@/components/ui/Logo";
 
 const NAV_LINKS = [
   { label: "About", href: "#about" },
@@ -73,14 +74,18 @@ export default function Navbar() {
     >
       <div className="container-luxe">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Wordmark */}
+          {/* Logo lockup */}
           <button
             onClick={() => scrollToSection("#hero")}
-            className="group cursor-pointer flex items-baseline gap-2"
+            className="group cursor-pointer flex items-center gap-2.5"
             aria-label="Go to top"
           >
+            <Logo
+              animate
+              className="h-6 w-[1.9rem] text-[#faf8f4] transition-[filter] duration-500 group-hover:[filter:drop-shadow(0_0_7px_rgba(233,200,75,0.55))]"
+            />
             <span
-              className="text-[#faf8f4] text-lg leading-none transition-colors group-hover:text-white"
+              className="hidden sm:inline-block text-[#faf8f4] text-lg leading-none transition-colors group-hover:text-white"
               style={{
                 fontFamily: "var(--font-poppins)",
                 fontWeight: 600,
@@ -89,10 +94,6 @@ export default function Navbar() {
             >
               Tushar Dhankhar
             </span>
-            <span
-              className="hidden sm:inline-block w-1.5 h-1.5 rounded-full transition-colors"
-              style={{ background: "var(--gold)" }}
-            />
           </button>
 
           {/* Desktop Nav */}

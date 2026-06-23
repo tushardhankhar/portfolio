@@ -403,6 +403,19 @@
   50% { box-shadow: 0 0 0 7px rgba(233, 200, 75, 0); }
 }
 
+/* ---------- TD monogram wipe-on (loader concept) ---------- */
+@keyframes tdReveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+.td-logo--animate {
+  animation: tdReveal 0.85s var(--ease-luxe) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-logo--animate { animation: none; clip-path: none; }
+}
+
 /* Utilities */
 .animate-cursor-blink { animation: cursorBlink 1.05s step-end infinite; }
 .animate-float-y { animation: floatY 7s var(--ease-soft) infinite; }
