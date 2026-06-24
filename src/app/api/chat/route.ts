@@ -78,5 +78,12 @@ export async function POST(req: Request) {
     maxOutputTokens: 1024,
   });
 
-  return result.toUIMessageStreamResponse();
+  return result.toUIMessageStreamResponse({
+    // Log the real error server-side for debugging, but never leak internal
+    // error details to the client.
+    onError: (error) => {
+      console.error("[chat] stream error:", error);
+      return "Sorry — I couldn't answer that just now. Please try again.";
+    },
+  });
 }
