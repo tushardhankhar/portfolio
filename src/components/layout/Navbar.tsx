@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/ui/Logo";
+import { openChat } from "@/lib/chat-events";
 
 const NAV_LINKS = [
   { label: "About", href: "#about" },
@@ -129,6 +130,23 @@ export default function Navbar() {
               );
             })}
             <button
+              onClick={openChat}
+              aria-label="Ask the AI assistant about Tushar"
+              className="inline-flex items-center gap-1.5 cursor-pointer text-xs uppercase text-muted-luxe hover:text-[#faf8f4] transition-colors group"
+              style={{
+                fontFamily: "var(--font-poppins)",
+                fontWeight: 500,
+                letterSpacing: "0.16em",
+              }}
+            >
+              <Sparkles
+                size={13}
+                style={{ color: "var(--gold)" }}
+                className="transition-transform duration-300 group-hover:rotate-12"
+              />
+              Ask AI
+            </button>
+            <button
               onClick={() => scrollToSection("#contact")}
               className="btn btn-ghost ml-1"
             >
@@ -152,7 +170,7 @@ export default function Navbar() {
         className={cn(
           "md:hidden overflow-hidden transition-all duration-500",
           mobileOpen
-            ? "max-h-96 opacity-100 bg-[rgba(8,9,12,0.92)] backdrop-blur-xl border-t border-[color:var(--line)]"
+            ? "max-h-[34rem] opacity-100 bg-[rgba(8,9,12,0.92)] backdrop-blur-xl border-t border-[color:var(--line)]"
             : "max-h-0 opacity-0"
         )}
         style={{ transitionTimingFunction: "var(--ease-luxe)" }}
@@ -178,6 +196,21 @@ export default function Navbar() {
               {link.label}
             </button>
           ))}
+          <button
+            onClick={() => {
+              setMobileOpen(false);
+              openChat();
+            }}
+            className="flex items-center gap-2 text-left py-4 text-sm uppercase transition-colors duration-300 cursor-pointer border-t border-[color:var(--line)] text-muted-luxe hover:text-[#faf8f4]"
+            style={{
+              fontFamily: "var(--font-poppins)",
+              fontWeight: 500,
+              letterSpacing: "0.16em",
+            }}
+          >
+            <Sparkles size={15} style={{ color: "var(--gold)" }} />
+            Ask AI
+          </button>
           <button
             onClick={() => scrollToSection("#contact")}
             className="btn btn-ghost mt-5 self-start"
