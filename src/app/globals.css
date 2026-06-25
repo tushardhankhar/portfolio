@@ -428,3 +428,112 @@
   background-size: 200% 100%;
   animation: shimmer 1.6s linear infinite;
 }
+
+/* ============================================================
+   Ambient background — site-wide depth (aurora · grid · orbs · spotlight)
+   All GPU-friendly (transform/opacity), fixed behind content.
+   ============================================================ */
+@keyframes gridPan { from { background-position: 0 0; } to { background-position: 0 -64px; } }
+@keyframes auroraDrift2 {
+  0%   { transform: translate3d(0,0,0) rotate(0deg) scale(1); }
+  50%  { transform: translate3d(-5%, 4%, 0) rotate(-12deg) scale(1.08); }
+  100% { transform: translate3d(0,0,0) rotate(0deg) scale(1); }
+}
+
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ambient-grid {
+  position: absolute;
+  inset: -2px;
+  background-image:
+    linear-gradient(to right, rgba(196,176,216,0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(196,176,216,0.18) 1px, transparent 1px);
+  background-size: 54px 54px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 88%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 88%);
+  animation: gridPan 16s linear infinite;
+  opacity: 1;
+}
+.ambient-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  will-change: transform;
+}
+.ambient-spotlight {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    640px circle at var(--mx, 50%) var(--my, 28%),
+    rgba(177, 144, 193, 0.14),
+    transparent 60%
+  );
+}
+@media (prefers-reduced-motion: reduce) {
+  .ambient-grid, .ambient-orb { animation: none !important; }
+}
+
+/* ============================================================
+   Glass + glow utilities — premium surfaces
+   ============================================================ */
+.glass {
+  background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018));
+  border: 1px solid var(--line);
+  backdrop-filter: blur(14px) saturate(125%);
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+}
+.glass-strong {
+  background: rgba(12, 14, 19, 0.66);
+  border: 1px solid var(--line-strong);
+  backdrop-filter: blur(20px) saturate(130%);
+  -webkit-backdrop-filter: blur(20px) saturate(130%);
+}
+.glow-hover {
+  transition: box-shadow var(--dur-2) var(--ease-luxe),
+              transform var(--dur-1) var(--ease-luxe),
+              border-color var(--dur-1) var(--ease-luxe);
+}
+.glow-hover:hover {
+  border-color: var(--line-gold);
+  box-shadow: 0 22px 60px -28px rgba(134, 71, 151, 0.55),
+              0 0 0 1px rgba(177, 144, 193, 0.18);
+}
+
+/* ============================================================
+   3D tilt — mouse-reactive perspective + glare
+   ============================================================ */
+.tilt { perspective: 1000px; }
+.tilt-inner {
+  position: relative;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.55s var(--ease-luxe);
+  will-change: transform;
+}
+.tilt:hover .tilt-inner { transition-duration: 0.12s; }
+.tilt-glare {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--gx, 50%) var(--gy, 50%),
+    rgba(255, 255, 255, 0.22),
+    transparent 45%
+  );
+  opacity: var(--ga, 0);
+  transition: opacity 0.35s ease;
+  mix-blend-mode: overlay;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tilt-inner { transform: none !important; }
+}

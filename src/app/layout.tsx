@@ -3,6 +3,7 @@ import { Poppins, Raleway } from "next/font/google";
 import "./globals.css";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import PageIntro from "@/components/ui/PageIntro";
+import AmbientBackground from "@/components/ui/AmbientBackground";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -87,8 +88,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full antialiased">
+        <AmbientBackground />
         <SmoothScrollProvider>
-          <PageIntro />
+          {process.env.NEXT_PUBLIC_NO_INTRO !== "1" && <PageIntro />}
           {children}
         </SmoothScrollProvider>
       </body>

@@ -7,12 +7,13 @@ export const maxDuration = 30;
 
 /**
  * Google Gemini (free tier via Google AI Studio). The provider reads
- * GOOGLE_GENERATIVE_AI_API_KEY from the environment. Model is overridable via
- * CHAT_MODEL — if AI Studio shows a different Flash model ID, set it there.
+ * GOOGLE_GENERATIVE_AI_API_KEY from the environment. Default is gemini-2.0-flash
+ * for its more generous free-tier request limits; gemini-2.5-flash is higher
+ * quality but rate-limits sooner on the free tier. Override via CHAT_MODEL.
  * Switching providers is a one-line change (e.g. `anthropic(...)` instead of
  * `google(...)`) thanks to the Vercel AI SDK.
  */
-const CHAT_MODEL = process.env.CHAT_MODEL || "gemini-2.5-flash";
+const CHAT_MODEL = process.env.CHAT_MODEL || "gemini-2.0-flash";
 
 // Best-effort, per-instance rate limit. Resets on cold start and isn't shared
 // across serverless instances — good enough to blunt casual abuse. Swap for
@@ -83,7 +84,7 @@ export async function POST(req: Request) {
     // error details to the client.
     onError: (error) => {
       console.error("[chat] stream error:", error);
-      return "Sorry — I couldn't answer that just now. Please try again.";
+      return "I'm getting a lot of questions right now — please try again in a moment.";
     },
   });
 }

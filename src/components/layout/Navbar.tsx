@@ -16,14 +16,33 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [active, setActive] = useState<string>("");
 
+  // Frost-on-scroll + auto-hide on scroll-down / reveal on scroll-up.
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
+    let lastY = window.scrollY;
+    let frame = 0;
+    const handleScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const y = window.scrollY;
+        setScrolled(y > 40);
+        const delta = y - lastY;
+        // Hide only when scrolling down past the hero; always show near top.
+        if (y > 160 && delta > 6) setHidden(true);
+        else if (delta < -6 || y < 160) setHidden(false);
+        lastY = y;
+      });
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
 
   // Active-section highlight via IntersectionObserver
@@ -67,8 +86,9 @@ export default function Navbar() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+        hidden && !mobileOpen ? "-translate-y-full" : "translate-y-0",
         scrolled
-          ? "bg-[rgba(8,9,12,0.72)] backdrop-blur-xl border-b border-[color:var(--line)]"
+          ? "glass-strong border-b border-[color:var(--line)]"
           : "bg-transparent border-b border-transparent"
       )}
       style={{ transitionTimingFunction: "var(--ease-luxe)" }}

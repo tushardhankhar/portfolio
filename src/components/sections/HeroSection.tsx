@@ -102,7 +102,6 @@ export default function HeroSection({
     <section
       id={id}
       className="relative min-h-[100dvh] flex items-center overflow-hidden"
-      style={{ background: "var(--ink)" }}
     >
       {/* Soft radial brand glow behind the canvas */}
       <div

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
+import Tilt from "@/components/ui/Tilt";
 import { cn } from "@/lib/utils";
 import {
   fallbackProjects,
@@ -242,20 +243,21 @@ function ProjectRow({
         </div>
       </div>
 
-      {/* visual — cover image or refined gradient block */}
-      <a
-        href={project.liveUrl ?? project.githubUrl ?? "#"}
-        target="_blank"
-        rel="noopener noreferrer"
+      {/* visual — cover image or refined gradient block, with 3D tilt */}
+      <Tilt
         className={cn(
-          "group/vis relative block overflow-hidden rounded-xl lg:order-3",
-          project.featured
-            ? "aspect-[16/10] w-full lg:w-[22rem]"
-            : "aspect-[16/10] w-full lg:w-64"
+          "rounded-xl lg:order-3",
+          project.featured ? "w-full lg:w-[22rem]" : "w-full lg:w-64"
         )}
-        style={{ border: "1px solid var(--line)" }}
-        aria-label={`View ${project.title}`}
       >
+        <a
+          href={project.liveUrl ?? project.githubUrl ?? "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group/vis relative block aspect-[16/10] w-full overflow-hidden rounded-xl"
+          style={{ border: "1px solid var(--line)" }}
+          aria-label={`View ${project.title}`}
+        >
         {project.coverImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -309,7 +311,8 @@ function ProjectRow({
             View <ArrowUpRight size={13} />
           </span>
         </span>
-      </a>
+        </a>
+      </Tilt>
     </motion.article>
   );
 }
