@@ -115,10 +115,14 @@ export default function ExperienceSection({
                           <span className="text-muted-luxe text-xs">
                             {exp.type}
                           </span>
-                          <span className="text-faint">·</span>
-                          <span className="text-muted-luxe text-xs">
-                            {exp.location}
-                          </span>
+                          {exp.location ? (
+                            <>
+                              <span className="text-faint">·</span>
+                              <span className="text-muted-luxe text-xs">
+                                {exp.location}
+                              </span>
+                            </>
+                          ) : null}
                         </div>
                       </div>
 

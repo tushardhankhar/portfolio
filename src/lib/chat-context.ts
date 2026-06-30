@@ -91,5 +91,5 @@ ${skillsText}
 - Email: ${settings.email}
 - GitHub: ${settings.githubUrl}
 - LinkedIn: ${settings.linkedinUrl}
-- Twitter/X: ${settings.twitterUrl}`;
+- Instagram: ${settings.instagramUrl}`;
 }

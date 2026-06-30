@@ -59,6 +59,11 @@ export const siteSettings = defineType({
       type: "url",
     }),
     defineField({
+      name: "instagramUrl",
+      title: "Instagram URL",
+      type: "url",
+    }),
+    defineField({
       name: "availabilityStatus",
       title: "Availability Status",
       type: "string",

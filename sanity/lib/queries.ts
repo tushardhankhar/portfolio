@@ -11,6 +11,7 @@ export const SITE_SETTINGS_QUERY = defineQuery(`
     githubUrl,
     linkedinUrl,
     twitterUrl,
+    instagramUrl,
     availabilityStatus,
     stats[]{ label, value }
   }

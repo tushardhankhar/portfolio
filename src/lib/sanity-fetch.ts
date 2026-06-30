@@ -143,6 +143,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     githubUrl: data.githubUrl || fallbackSiteSettings.githubUrl,
     linkedinUrl: data.linkedinUrl || fallbackSiteSettings.linkedinUrl,
     twitterUrl: data.twitterUrl || fallbackSiteSettings.twitterUrl,
+    instagramUrl: data.instagramUrl || fallbackSiteSettings.instagramUrl,
     availabilityStatus:
       data.availabilityStatus || fallbackSiteSettings.availabilityStatus,
     stats:

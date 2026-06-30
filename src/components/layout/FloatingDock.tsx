@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Code2, Link, AtSign, Mail } from "lucide-react";
+import { Code2, Link, Camera, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const SOCIAL_LINKS = [
@@ -14,14 +14,14 @@ const SOCIAL_LINKS = [
   {
     id: "linkedin",
     label: "LinkedIn",
-    href: "https://linkedin.com/in/tushardhankhar",
+    href: "https://www.linkedin.com/in/tushar-dhankhar",
     icon: Link,
   },
   {
-    id: "twitter",
-    label: "Twitter / X",
-    href: "https://twitter.com/tushardhankhar",
-    icon: AtSign,
+    id: "instagram",
+    label: "Instagram",
+    href: "https://www.instagram.com/tushardhankhar98/",
+    icon: Camera,
   },
   {
     id: "email",

@@ -7,7 +7,7 @@ import { z } from "zod";
 import {
   Code2,
   Link,
-  AtSign,
+  Camera,
   Mail,
   Send,
   CheckCircle,
@@ -48,9 +48,9 @@ export default function ContactSection({
   const SOCIALS = [
     { label: "GitHub", href: siteSettings.githubUrl, icon: Code2 },
     { label: "LinkedIn", href: siteSettings.linkedinUrl, icon: Link },
-    { label: "Twitter", href: siteSettings.twitterUrl, icon: AtSign },
+    { label: "Instagram", href: siteSettings.instagramUrl, icon: Camera },
     { label: "Email", href: `mailto:${siteSettings.email}`, icon: Mail },
-  ];
+  ].filter((s) => Boolean(s.href));
 
   const [submitState, setSubmitState] = useState<
     "idle" | "loading" | "success" | "error"
