@@ -199,6 +199,27 @@
     background: linear-gradient(90deg, transparent, var(--line-gold), transparent);
   }
 
+  /* ---------- Footer ---------- */
+  .footer-col-title {
+    font-family: var(--font-poppins);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+  }
+  .footer-link {
+    font-family: var(--font-raleway);
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color var(--dur-1) var(--ease-luxe), transform var(--dur-1) var(--ease-luxe);
+  }
+  .footer-link:hover {
+    color: var(--foreground);
+    transform: translateX(3px);
+  }
+
   /* ---------- Surfaces / cards ---------- */
   .surface {
     position: relative;

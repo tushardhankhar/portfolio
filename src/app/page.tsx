@@ -1,4 +1,5 @@
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import FloatingDock from "@/components/layout/FloatingDock";
 import HeroSection from "@/components/sections/HeroSection";
 import AboutSection from "@/components/sections/AboutSection";
@@ -53,32 +54,7 @@ export default async function Home() {
       <FloatingDock />
       <ChatWidget name={siteSettings.name} />
 
-      {/* Footer */}
-      <footer
-        className="section-luxe !py-14"
-        style={{ borderTop: "1px solid var(--line)", background: "var(--ink)" }}
-      >
-        <div className="container-luxe flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p
-            className="text-sm text-faint"
-            style={{ fontFamily: "var(--font-raleway)" }}
-          >
-            © {new Date().getFullYear()}{" "}
-            <span
-              className="text-soft"
-              style={{ fontFamily: "var(--font-poppins)" }}
-            >
-              {siteSettings.name}
-            </span>
-          </p>
-          <p
-            className="text-xs text-faint tracking-wide"
-            style={{ fontFamily: "var(--font-poppins)" }}
-          >
-            Designed &amp; built with Next.js · Three.js · Sanity
-          </p>
-        </div>
-      </footer>
+      <Footer siteSettings={siteSettings} />
     </>
   );
 }
