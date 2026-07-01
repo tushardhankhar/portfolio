@@ -274,7 +274,7 @@ export const fallbackSiteSettings: SiteSettings = {
     "I build fast, beautiful, and intelligent web experiences. Passionate about full-stack engineering, AI integrations, and crafting products that make people's lives easier.",
   resumeUrl:
     "https://drive.google.com/file/d/1TaguXNUQsiQxvxCIdFKBaLQFqi4pCwAU/view?usp=sharing",
-  email: "tdhankhar@viamedia.ai",
+  email: "tushardhankhar98@gmail.com",
   githubUrl: "https://github.com/tushardhankhar",
   linkedinUrl: "https://www.linkedin.com/in/tushar-dhankhar",
   twitterUrl: "",

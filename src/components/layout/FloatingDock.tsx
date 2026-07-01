@@ -26,7 +26,7 @@ const SOCIAL_LINKS = [
   {
     id: "email",
     label: "Email Me",
-    href: "mailto:tdhankhar@viamedia.ai",
+    href: "mailto:tushardhankhar98@gmail.com",
     icon: Mail,
   },
 ];

@@ -219,6 +219,32 @@
     color: var(--foreground);
     transform: translateX(3px);
   }
+  .footer-index {
+    font-family: var(--font-poppins);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--gold);
+    opacity: 0.55;
+    font-variant-numeric: tabular-nums;
+    transition: opacity var(--dur-1) var(--ease-luxe);
+  }
+  .footer-link:hover .footer-index { opacity: 1; }
+  .footer-social {
+    border-color: var(--line);
+    color: var(--text-muted);
+    transition:
+      color var(--dur-1) var(--ease-luxe),
+      border-color var(--dur-1) var(--ease-luxe),
+      transform var(--dur-1) var(--ease-luxe),
+      background-color var(--dur-1) var(--ease-luxe);
+  }
+  .footer-social:hover {
+    color: var(--gold);
+    border-color: var(--line-gold);
+    background-color: rgba(255, 255, 255, 0.03);
+    transform: translateY(-2px);
+  }
 
   /* ---------- Surfaces / cards ---------- */
   .surface {

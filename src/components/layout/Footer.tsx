@@ -1,7 +1,14 @@
 "use client";
 
-import { useCallback } from "react";
-import { Code2, Link as LinkIcon, Camera, Mail, ArrowUp, Sparkles } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Code2,
+  Link as LinkIcon,
+  Camera,
+  Mail,
+  ArrowUp,
+  Sparkles,
+} from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { openChat } from "@/lib/chat-events";
 import type { SiteSettings } from "@/data/fallback";
@@ -14,12 +21,32 @@ const NAV_LINKS = [
   { label: "Contact", href: "#contact" },
 ];
 
+const STACK = ["Next.js", "TypeScript", "Three.js", "Tailwind", "Sanity"];
+
 interface FooterProps {
   siteSettings: SiteSettings;
 }
 
 export default function Footer({ siteSettings }: FooterProps) {
   const year = new Date().getFullYear();
+  const locale = siteSettings.roles.slice(0, 3).join(" · ");
+
+  // Live local clock (IST) — set after mount to avoid hydration mismatch.
+  const [now, setNow] = useState<string | null>(null);
+  useEffect(() => {
+    const tick = () =>
+      setNow(
+        new Intl.DateTimeFormat("en-GB", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+          timeZone: "Asia/Kolkata",
+        }).format(new Date())
+      );
+    tick();
+    const id = setInterval(tick, 30_000);
+    return () => clearInterval(id);
+  }, []);
 
   const socials = [
     { label: "GitHub", href: siteSettings.githubUrl, icon: Code2 },
@@ -29,9 +56,11 @@ export default function Footer({ siteSettings }: FooterProps) {
   ].filter((s) => Boolean(s.href));
 
   const scrollTo = useCallback((target: "top" | string) => {
-    const lenis = (window as unknown as {
-      lenis?: { scrollTo: (target: Element | number, opts?: object) => void };
-    }).lenis;
+    const lenis = (
+      window as unknown as {
+        lenis?: { scrollTo: (target: Element | number, opts?: object) => void };
+      }
+    ).lenis;
 
     if (target === "top") {
       if (lenis) lenis.scrollTo(0);
@@ -45,16 +74,49 @@ export default function Footer({ siteSettings }: FooterProps) {
   }, []);
 
   return (
-    <footer
-      className="relative overflow-hidden"
-      style={{ background: "var(--ink)" }}
-    >
-      {/* Top gold hairline */}
+    <footer className="relative overflow-hidden" style={{ background: "var(--ink)" }}>
+      {/* Top gold hairline + soft glow */}
       <div className="hairline-gold" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-48"
+        style={{
+          background:
+            "radial-gradient(60% 100% at 50% 0%, rgba(233,200,75,0.05), transparent 70%)",
+        }}
+      />
 
-      <div className="container-luxe relative z-10 pt-20 pb-10">
+      <div className="container-luxe relative z-10 pt-12 pb-10">
+        {/* Meta bar — status + live clock */}
+        <div className="flex flex-col gap-3 pb-10 text-[0.7rem] uppercase tracking-[0.18em] text-faint sm:flex-row sm:items-center sm:justify-between"
+          style={{ fontFamily: "var(--font-poppins)" }}
+        >
+          <span className="inline-flex items-center gap-2.5">
+            <span className="relative flex h-2 w-2">
+              <span
+                className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
+                style={{ background: "#3fb950" }}
+              />
+              <span
+                className="relative inline-flex h-2 w-2 rounded-full"
+                style={{ background: "#3fb950", boxShadow: "0 0 8px rgba(63,185,80,0.7)" }}
+              />
+            </span>
+            {siteSettings.availabilityStatus}
+          </span>
+          <span className="inline-flex items-center gap-2 text-muted-luxe">
+            New Delhi, IN
+            <span style={{ color: "var(--line-strong)" }}>/</span>
+            <span className="tabular-nums text-soft">
+              {now ?? "––:––"} IST
+            </span>
+          </span>
+        </div>
+
+        <div className="hairline" />
+
         {/* CTA row */}
-        <div className="flex flex-col gap-6 pb-14 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-6 py-14 md:flex-row md:items-end md:justify-between">
           <div className="max-w-xl">
             <span className="eyebrow">Let&apos;s connect</span>
             <h2
@@ -66,10 +128,7 @@ export default function Footer({ siteSettings }: FooterProps) {
             </h2>
           </div>
           <div className="flex flex-shrink-0 items-center gap-3">
-            <button
-              onClick={() => scrollTo("#contact")}
-              className="btn btn-primary"
-            >
+            <button onClick={() => scrollTo("#contact")} className="btn btn-primary">
               Get in touch
             </button>
             <button
@@ -86,7 +145,7 @@ export default function Footer({ siteSettings }: FooterProps) {
         <div className="hairline" />
 
         {/* Columns */}
-        <div className="grid grid-cols-1 gap-10 py-12 sm:grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div className="grid grid-cols-1 gap-10 py-12 sm:grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr]">
           {/* Brand */}
           <div className="flex flex-col gap-5">
             <button
@@ -110,9 +169,8 @@ export default function Footer({ siteSettings }: FooterProps) {
               className="max-w-xs text-sm leading-relaxed text-muted-luxe"
               style={{ fontFamily: "var(--font-raleway)" }}
             >
-              {siteSettings.roles.slice(0, 3).join(" · ")}
+              {locale}
             </p>
-            {/* Social icons */}
             <div className="flex items-center gap-2.5">
               {socials.map(({ label, href, icon: Icon }) => {
                 const external = !href.startsWith("mailto:");
@@ -123,19 +181,7 @@ export default function Footer({ siteSettings }: FooterProps) {
                     target={external ? "_blank" : undefined}
                     rel={external ? "noopener noreferrer" : undefined}
                     aria-label={label}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-300 hover:scale-110"
-                    style={{
-                      borderColor: "var(--line)",
-                      color: "var(--text-muted)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "var(--line-gold)";
-                      e.currentTarget.style.color = "var(--gold)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "var(--line)";
-                      e.currentTarget.style.color = "var(--text-muted)";
-                    }}
+                    className="footer-social flex h-9 w-9 items-center justify-center rounded-full border"
                   >
                     <Icon size={15} />
                   </a>
@@ -145,21 +191,22 @@ export default function Footer({ siteSettings }: FooterProps) {
           </div>
 
           {/* Navigate */}
-          <nav className="flex flex-col gap-3.5">
+          <nav className="flex flex-col gap-3.5 md:border-l md:border-[color:var(--line)] md:pl-10">
             <p className="footer-col-title">Navigate</p>
-            {NAV_LINKS.map((link) => (
+            {NAV_LINKS.map((link, i) => (
               <button
                 key={link.href}
                 onClick={() => scrollTo(link.href)}
-                className="footer-link w-fit"
+                className="footer-link group inline-flex w-fit items-center gap-2.5"
               >
+                <span className="footer-index">{String(i + 1).padStart(2, "0")}</span>
                 {link.label}
               </button>
             ))}
           </nav>
 
           {/* Connect */}
-          <nav className="flex flex-col gap-3.5">
+          <nav className="flex flex-col gap-3.5 md:border-l md:border-[color:var(--line)] md:pl-10">
             <p className="footer-col-title">Connect</p>
             <a
               href={`mailto:${siteSettings.email}`}
@@ -185,26 +232,32 @@ export default function Footer({ siteSettings }: FooterProps) {
 
         <div className="hairline" />
 
+        {/* Stack row */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 pt-8">
+          <span
+            className="text-[0.65rem] uppercase tracking-[0.2em] text-faint"
+            style={{ fontFamily: "var(--font-poppins)" }}
+          >
+            Built with
+          </span>
+          {STACK.map((t) => (
+            <span key={t} className="tech-tag">
+              {t}
+            </span>
+          ))}
+        </div>
+
         {/* Bottom bar */}
-        <div className="flex flex-col items-center gap-4 pt-8 sm:flex-row sm:justify-between">
+        <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <p
             className="text-xs text-faint"
             style={{ fontFamily: "var(--font-raleway)" }}
           >
             © {year}{" "}
-            <span
-              className="text-soft"
-              style={{ fontFamily: "var(--font-poppins)" }}
-            >
+            <span className="text-soft" style={{ fontFamily: "var(--font-poppins)" }}>
               {siteSettings.name}
             </span>
             . All rights reserved.
-          </p>
-          <p
-            className="text-[0.7rem] uppercase tracking-[0.16em] text-faint"
-            style={{ fontFamily: "var(--font-poppins)" }}
-          >
-            Built with Next.js · Three.js · Sanity
           </p>
           <button
             onClick={() => scrollTo("top")}
