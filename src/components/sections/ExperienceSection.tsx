@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef } from "react";
+import { motion, useScroll, useSpring } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
@@ -19,6 +21,14 @@ export default function ExperienceSection({
   experiences = fallbackExperiences,
   resumeUrl = "/Tushar_Dhankhar_Resume.pdf",
 }: ExperienceSectionProps) {
+  // Gold rail draws itself in as the timeline scrolls through the viewport.
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: timelineRef,
+    offset: ["start 0.75", "end 0.45"],
+  });
+  const railScale = useSpring(scrollYProgress, { stiffness: 90, damping: 24 });
+
   return (
     <section id={id} className="section-luxe" style={{ background: "var(--ink)" }}>
       <div className="container-luxe">
@@ -34,12 +44,22 @@ export default function ExperienceSection({
         />
 
         {/* Editorial timeline — single hairline rail on the left */}
-        <div className="relative mt-16 sm:mt-20 sm:pl-10">
+        <div ref={timelineRef} className="relative mt-16 sm:mt-20 sm:pl-10">
           {/* vertical rail (hidden on small screens) */}
           <span
             aria-hidden
             className="absolute left-[3px] top-2 bottom-2 hidden w-px sm:block"
             style={{ background: "var(--line)" }}
+          />
+          {/* gold overlay rail — draws in with scroll */}
+          <motion.span
+            aria-hidden
+            className="absolute left-[3px] top-2 bottom-2 hidden w-px origin-top sm:block"
+            style={{
+              background:
+                "linear-gradient(to bottom, var(--gold), rgba(233,200,75,0.25))",
+              scaleY: railScale,
+            }}
           />
 
           <div className="flex flex-col">

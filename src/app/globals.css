@@ -143,6 +143,9 @@
     padding-block: clamp(5rem, 13vh, 11rem);
   }
 
+  /* NOTE: don't use content-visibility on sections here — its estimated heights
+     desync Lenis's smooth-scroll bounds and the page becomes unscrollable to the end. */
+
   /* ---------- Eyebrow label (— SECTION) ---------- */
   .eyebrow {
     display: inline-flex;
@@ -389,12 +392,53 @@
     opacity: 0;
     transform: translateY(28px);
     transition: opacity var(--dur-2) var(--ease-luxe),
-                transform var(--dur-2) var(--ease-luxe);
+                transform var(--dur-2) var(--ease-luxe),
+                filter var(--dur-2) var(--ease-luxe);
     will-change: opacity, transform;
   }
   .reveal.is-visible {
     opacity: 1;
     transform: none;
+    filter: none;
+  }
+
+  /* Reveal variants — combine with .reveal */
+  .reveal--blur { filter: blur(10px); transform: translateY(20px); }
+  .reveal--scale { transform: translateY(16px) scale(0.96); }
+  .reveal--left { transform: translateX(-32px); }
+  .reveal--right { transform: translateX(32px); }
+
+  /* Stagger container — direct children fade/rise one after another.
+     Apply .reveal-stagger to a parent Reveal; children need no classes. */
+  .reveal-stagger > * {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity var(--dur-2) var(--ease-luxe),
+                transform var(--dur-2) var(--ease-luxe);
+    transition-delay: calc(var(--stagger-base, 0s) + var(--stagger-step, 90ms) * var(--i, 0));
+  }
+  .reveal-stagger.is-visible > * {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-stagger > *:nth-child(1) { --i: 0; }
+  .reveal-stagger > *:nth-child(2) { --i: 1; }
+  .reveal-stagger > *:nth-child(3) { --i: 2; }
+  .reveal-stagger > *:nth-child(4) { --i: 3; }
+  .reveal-stagger > *:nth-child(5) { --i: 4; }
+  .reveal-stagger > *:nth-child(6) { --i: 5; }
+  .reveal-stagger > *:nth-child(7) { --i: 6; }
+  .reveal-stagger > *:nth-child(8) { --i: 7; }
+  .reveal-stagger > *:nth-child(n + 9) { --i: 8; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal-stagger > * {
+      opacity: 1 !important;
+      transform: none !important;
+      filter: none !important;
+      transition: none !important;
+    }
   }
 
   /* ---------- Grain overlay ---------- */

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
@@ -46,9 +46,9 @@ function useSpherePoints(count: number, radius: number) {
   }, [count, radius]);
 }
 
-function ParticleSphere() {
+function ParticleSphere({ count }: { count: number }) {
   const group = useRef<THREE.Group>(null);
-  const { positions, colors } = useSpherePoints(2600, 2.1);
+  const { positions, colors } = useSpherePoints(count, 2.1);
   const { pointer } = useThree();
 
   useFrame((_, delta) => {
@@ -57,13 +57,10 @@ function ParticleSphere() {
     group.current.rotation.y += delta * 0.06;
     group.current.rotation.x += delta * 0.012;
     // gentle parallax toward cursor
-    const targetX = pointer.y * 0.18;
-    const targetY = pointer.x * 0.28;
-    group.current.rotation.x += (targetX - group.current.rotation.x * 0) * 0;
     group.current.position.x += (pointer.x * 0.25 - group.current.position.x) * 0.04;
     group.current.position.y += (pointer.y * 0.18 - group.current.position.y) * 0.04;
-    // keep targetX/Y referenced (avoid lint), subtle tilt
-    group.current.rotation.z = targetY * 0.05;
+    // subtle tilt following horizontal cursor travel
+    group.current.rotation.z = pointer.x * 0.28 * 0.05;
   });
 
   return (
@@ -96,14 +93,55 @@ function ParticleSphere() {
 }
 
 export default function HeroCanvas() {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(true);
+  const [profile, setProfile] = useState<{
+    count: number;
+    dpr: [number, number];
+    reduced: boolean;
+  } | null>(null);
+
+  // Detect device profile once on mount (client only).
+  useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const small = window.innerWidth < 768;
+    setProfile({
+      // fewer particles on mobile → less vertex work per frame
+      count: coarse || small ? 1400 : 2600,
+      // cap DPR below full retina — indistinguishable for additive points, ~2x cheaper
+      dpr: [1, coarse || small ? 1.5 : 1.75],
+      reduced,
+    });
+  }, []);
+
+  // Pause the render loop entirely when the hero is scrolled out of view.
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  if (!profile) return <div ref={wrapRef} className="h-full w-full" />;
+
   return (
-    <Canvas
-      camera={{ position: [0, 0, 5.2], fov: 50 }}
-      dpr={[1, 2]}
-      gl={{ antialias: true, alpha: true }}
-      style={{ background: "transparent" }}
-    >
-      <ParticleSphere />
-    </Canvas>
+    <div ref={wrapRef} className="h-full w-full">
+      <Canvas
+        camera={{ position: [0, 0, 5.2], fov: 50 }}
+        dpr={profile.dpr}
+        // additive-blended points don't benefit from MSAA — skip the cost
+        gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
+        // reduced motion → render a single static frame; off-screen → stop the loop
+        frameloop={profile.reduced ? "demand" : inView ? "always" : "never"}
+        style={{ background: "transparent" }}
+      >
+        <ParticleSphere count={profile.count} />
+      </Canvas>
+    </div>
   );
 }

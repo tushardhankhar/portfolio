@@ -50,7 +50,9 @@ function toPortableText(paragraphs: string[]) {
   }));
 }
 
-function buildDocs() {
+type SeedDoc = { _id: string; _type: string } & Record<string, unknown>;
+
+function buildDocs(): SeedDoc[] {
   const siteSettings = {
     _id: "siteSettings",
     _type: "siteSettings",

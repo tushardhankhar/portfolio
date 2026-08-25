@@ -61,6 +61,13 @@ interface RawProject extends Omit<Project, "coverImage" | "category"> {
   category?: ProjectCategory[] | null;
 }
 
+/** Static cover screenshots in `public/`, keyed by project id. */
+const localCovers = new Map(
+  fallbackProjects
+    .filter((p) => p.coverImage)
+    .map((p) => [p.id, p.coverImage as string])
+);
+
 export async function getProjects(): Promise<Project[]> {
   const data = await safeFetch<RawProject[]>(PROJECTS_QUERY);
   if (!data || data.length === 0) return fallbackProjects;
@@ -72,7 +79,10 @@ export async function getProjects(): Promise<Project[]> {
     featured: Boolean(p.featured),
     gradientFrom: p.gradientFrom || "#864797",
     gradientTo: p.gradientTo || "#0CC0DF",
-    coverImage: urlForImage(p.coverImage) || undefined,
+    // Seeded documents have no uploaded cover, so fall back to the local
+    // screenshot for that project before giving up on an image entirely.
+    coverImage:
+      urlForImage(p.coverImage) || localCovers.get(p.id) || undefined,
   }));
 }
 

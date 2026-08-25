@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import gsap from "gsap";
 import MagneticButton from "@/components/ui/MagneticButton";
+import CountUp from "@/components/ui/CountUp";
 import { cn } from "@/lib/utils";
 import { fallbackSiteSettings, type SiteSettings } from "@/data/fallback";
 
@@ -216,16 +217,15 @@ export default function HeroSection({
             >
               {siteSettings.stats.map((stat) => (
                 <div key={stat.label} className="flex flex-col gap-1">
-                  <span
+                  <CountUp
+                    value={stat.value}
                     className="text-2xl lg:text-3xl tracking-tight"
                     style={{
                       fontFamily: "var(--font-poppins)",
                       fontWeight: 600,
                       color: "#faf8f4",
                     }}
-                  >
-                    {stat.value}
-                  </span>
+                  />
                   <span
                     className="text-[0.72rem] tracking-[0.12em] uppercase text-faint"
                     style={{ fontFamily: "var(--font-poppins)" }}

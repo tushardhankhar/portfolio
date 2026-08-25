@@ -6,7 +6,7 @@ import type { UIMessage } from "ai";
 import { MessageCircle, X, ArrowUp, Square } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
-import { OPEN_CHAT_EVENT } from "@/lib/chat-events";
+import { OPEN_CHAT_EVENT, consumePendingOpen } from "@/lib/chat-events";
 
 const SUGGESTIONS = [
   "What's Tushar's experience with AI?",
@@ -37,9 +37,14 @@ export default function ChatWidget({ name = "Tushar" }: { name?: string }) {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages, status]);
 
-  // Open from external triggers (e.g. the navbar "Ask AI" button).
+  // Open from external triggers (e.g. the navbar "Ask AI" button). The widget
+  // is lazily mounted, so also honor a request made before it existed.
   useEffect(() => {
-    const onOpen = () => setOpen(true);
+    if (consumePendingOpen()) setOpen(true);
+    const onOpen = () => {
+      consumePendingOpen();
+      setOpen(true);
+    };
     window.addEventListener(OPEN_CHAT_EVENT, onOpen);
     return () => window.removeEventListener(OPEN_CHAT_EVENT, onOpen);
   }, []);

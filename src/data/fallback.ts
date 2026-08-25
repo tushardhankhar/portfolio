@@ -89,6 +89,36 @@ export interface Skill {
 
 export const fallbackProjects: Project[] = [
   {
+    id: "jashn",
+    title: "Join The Jashn",
+    description:
+      "A self-serve digital invitation platform for Indian weddings and events — 20 hand-crafted themes, guest RSVPs and paid activation — taken from concept to its first paying customers.",
+    longDescription:
+      "Built and launched Jashn (JoinTheJashn), a self-serve digital invitation platform for Indian weddings and events, taking the product from concept to its first paying customers. Shipped 20 hand-crafted invitation themes with Next.js, React, TypeScript, GSAP, Framer Motion and Lenis, tuned to stay responsive from small preview cards up to full-screen views. Designed a multi-tenant PostgreSQL architecture with Row Level Security across 22 migrations, supporting both authenticated host and anonymous guest workflows without requiring guest accounts. Built a serverless media pipeline using client-side WebP re-encoding, presigned uploads and Cloudflare R2 to keep storage and bandwidth off the application server, plus server-rendered PDF invitations and QR-code generation wired into guest access and invitation sharing. Secured guest access with 256-bit bearer tokens, SHA-256 hashing, OTP/magic links and durable share tokens that stay valid across guest-list changes. Payment activation runs through Razorpay with idempotent handling across both client-side verification and webhooks, so invitations activate reliably even when a user closes the payment flow.",
+    category: ["Full Stack"],
+    tech: [
+      "Next.js 16",
+      "React 19",
+      "TypeScript",
+      "Tailwind CSS",
+      "Node.js",
+      "PostgreSQL",
+      "Supabase",
+      "Cloudflare R2",
+      "Razorpay",
+      "Vercel",
+      "GSAP",
+      "Framer Motion",
+      "Lenis",
+    ],
+    liveUrl: "https://www.jointhejashn.com",
+    coverImage: "/Jashn.jpg",
+    gradientFrom: "#864797",
+    gradientTo: "#F2DA00",
+    featured: true,
+    badge: "Live",
+  },
+  {
     id: "netflix-gpt",
     title: "Netflix GPT Search",
     description:
@@ -272,8 +302,7 @@ export const fallbackSiteSettings: SiteSettings = {
   heroGreeting: "Hi there, I'm",
   heroTagline:
     "I build fast, beautiful, and intelligent web experiences. Passionate about full-stack engineering, AI integrations, and crafting products that make people's lives easier.",
-  resumeUrl:
-    "https://drive.google.com/file/d/1TaguXNUQsiQxvxCIdFKBaLQFqi4pCwAU/view?usp=sharing",
+  resumeUrl: "/Tushar_Dhankhar_Resume.pdf",
   email: "tushardhankhar98@gmail.com",
   githubUrl: "https://github.com/tushardhankhar",
   linkedinUrl: "https://www.linkedin.com/in/tushar-dhankhar",

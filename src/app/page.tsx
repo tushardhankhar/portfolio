@@ -10,7 +10,7 @@ import ContactSection from "@/components/sections/ContactSection";
 import GrainOverlay from "@/components/ui/GrainOverlay";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import CustomCursor from "@/components/ui/CustomCursor";
-import ChatWidget from "@/components/ui/ChatWidget";
+import LazyChatWidget from "@/components/ui/LazyChatWidget";
 import {
   getAbout,
   getExperiences,
@@ -52,7 +52,7 @@ export default async function Home() {
       </main>
 
       <FloatingDock />
-      <ChatWidget name={siteSettings.name} />
+      <LazyChatWidget name={siteSettings.name} />
 
       <Footer siteSettings={siteSettings} />
     </>

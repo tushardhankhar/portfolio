@@ -44,7 +44,7 @@ export default function SectionHeading({
         )}
       </Reveal>
 
-      <Reveal delay={0.08}>
+      <Reveal delay={0.08} variant="blur">
         <h2 className="display display-lg gradient-text max-w-3xl">{title}</h2>
       </Reveal>
 
