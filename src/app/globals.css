@@ -40,6 +40,11 @@
   --soft-purple: #b190c1;
   --gray-muted: #8b8d96;
 
+  /* Live status — the one green on the site, reserved for "available" */
+  --live: #3fb950;
+  --live-soft: rgba(63, 185, 80, 0.55);
+  --live-faint: rgba(63, 185, 80, 0);
+
   /* Text scale */
   --text-faint: rgba(236, 233, 228, 0.42);
   --text-muted: rgba(236, 233, 228, 0.62);
@@ -117,6 +122,27 @@
   /* Selection */
   ::selection { background-color: var(--yellow); color: #1a1205; }
   ::-moz-selection { background-color: var(--yellow); color: #1a1205; }
+
+  /* Keyboard focus — the dark canvas swallows the UA default outline */
+  :focus-visible {
+    /* longhands: a var() inside the `outline` shorthand loses the colour
+       to whatever currentColor resolves to on the focused element */
+    outline-width: 2px;
+    outline-style: solid;
+    outline-color: var(--gold);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  /* Pointer clicks shouldn't leave a ring behind */
+  :focus:not(:focus-visible) { outline: none; }
+
+  /* Inputs get the ring on the field itself, not an offset box */
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 1px 0 0 var(--gold);
+  }
 
   /* Honor reduced motion */
   @media (prefers-reduced-motion: reduce) {
@@ -276,11 +302,19 @@
     opacity: 0.6;
     pointer-events: none;
   }
+  .surface-hover {
+    transition: border-color var(--dur-1) var(--ease-luxe),
+                transform var(--dur-1) var(--ease-luxe),
+                background var(--dur-1) var(--ease-luxe),
+                box-shadow var(--dur-2) var(--ease-luxe);
+  }
   .surface-hover:hover {
-    border-color: var(--line-strong);
+    border-color: var(--line-gold);
     transform: translateY(-3px);
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02));
+    box-shadow: 0 26px 60px -34px rgba(134, 71, 151, 0.6),
+                0 0 0 1px rgba(233, 200, 75, 0.1);
   }
 
   /* Back-compat alias (older markup) */
@@ -390,7 +424,7 @@
   /* ---------- Reveal (scroll-in) ---------- */
   .reveal {
     opacity: 0;
-    transform: translateY(28px);
+    transform: translateY(22px);
     transition: opacity var(--dur-2) var(--ease-luxe),
                 transform var(--dur-2) var(--ease-luxe),
                 filter var(--dur-2) var(--ease-luxe);
@@ -403,16 +437,16 @@
   }
 
   /* Reveal variants — combine with .reveal */
-  .reveal--blur { filter: blur(10px); transform: translateY(20px); }
-  .reveal--scale { transform: translateY(16px) scale(0.96); }
-  .reveal--left { transform: translateX(-32px); }
-  .reveal--right { transform: translateX(32px); }
+  .reveal--blur { filter: blur(8px); transform: translateY(16px); }
+  .reveal--scale { transform: translateY(14px) scale(0.965); }
+  .reveal--left { transform: translateX(-28px); }
+  .reveal--right { transform: translateX(28px); }
 
   /* Stagger container — direct children fade/rise one after another.
      Apply .reveal-stagger to a parent Reveal; children need no classes. */
   .reveal-stagger > * {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(18px);
     transition: opacity var(--dur-2) var(--ease-luxe),
                 transform var(--dur-2) var(--ease-luxe);
     transition-delay: calc(var(--stagger-base, 0s) + var(--stagger-step, 90ms) * var(--i, 0));
@@ -450,6 +484,36 @@
     opacity: 0.04;
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- Live status dot ---------- */
+  .status-dot {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--dot-size, 8px);
+    height: var(--dot-size, 8px);
+  }
+  .status-dot__core {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--live);
+    box-shadow: 0 0 9px var(--live-soft);
+  }
+  .status-dot__halo {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: var(--live);
+    animation: livePing 2.4s var(--ease-soft) infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .status-dot__halo { animation: none; opacity: 0.35; }
   }
 
   /* ---------- Scroll progress ---------- */
@@ -490,8 +554,15 @@
 }
 
 @keyframes dotPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(233, 200, 75, 0.5); }
+  0%, 100% { box-shadow: 0 0 0 0 var(--dot-ring, rgba(233, 200, 75, 0.5)); }
   50% { box-shadow: 0 0 0 7px rgba(233, 200, 75, 0); }
+}
+
+/* Live availability dot — solid core + expanding halo, one shared treatment */
+@keyframes livePing {
+  0%   { transform: scale(1);   opacity: 0.55; }
+  70%  { transform: scale(2.6); opacity: 0; }
+  100% { transform: scale(2.6); opacity: 0; }
 }
 
 /* ---------- TD monogram wipe-on (loader concept) ---------- */

@@ -138,11 +138,12 @@ function ProjectRow({
   return (
     <motion.article
       initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
       transition={{
         duration: 0.7,
         ease: [0.16, 1, 0.3, 1],
-        delay: index * 0.07,
+        delay: (index % 3) * 0.07,
       }}
       className={cn(
         "group grid grid-cols-1 items-center gap-8 border-b py-10 lg:grid-cols-[3rem_1fr_auto]",

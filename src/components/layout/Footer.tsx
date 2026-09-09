@@ -10,6 +10,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
+import StatusDot from "@/components/ui/StatusDot";
 import { openChat } from "@/lib/chat-events";
 import type { SiteSettings } from "@/data/fallback";
 
@@ -92,16 +93,7 @@ export default function Footer({ siteSettings }: FooterProps) {
           style={{ fontFamily: "var(--font-poppins)" }}
         >
           <span className="inline-flex items-center gap-2.5">
-            <span className="relative flex h-2 w-2">
-              <span
-                className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
-                style={{ background: "#3fb950" }}
-              />
-              <span
-                className="relative inline-flex h-2 w-2 rounded-full"
-                style={{ background: "#3fb950", boxShadow: "0 0 8px rgba(63,185,80,0.7)" }}
-              />
-            </span>
+            <StatusDot />
             {siteSettings.availabilityStatus}
           </span>
           <span className="inline-flex items-center gap-2 text-muted-luxe">

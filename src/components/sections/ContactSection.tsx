@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
+import StatusDot from "@/components/ui/StatusDot";
 import { cn } from "@/lib/utils";
 import {
   fallbackSiteSettings,
@@ -94,7 +95,7 @@ export default function ContactSection({
       <div className="container-luxe">
         <SectionHeading
           eyebrow="Contact"
-          index="06"
+          index="05"
           title={
             <>
               Let&apos;s build <span className="gradient-gold">something</span>
@@ -260,10 +261,7 @@ export default function ContactSection({
             {/* availability badge */}
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2.5">
-                <span
-                  className="h-2 w-2 rounded-full animate-dot-pulse"
-                  style={{ background: "var(--gold)" }}
-                />
+                <StatusDot />
                 <span
                   className="text-soft text-sm"
                   style={{ fontFamily: "var(--font-poppins)" }}

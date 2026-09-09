@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import gsap from "gsap";
 import MagneticButton from "@/components/ui/MagneticButton";
+import StatusDot from "@/components/ui/StatusDot";
 import CountUp from "@/components/ui/CountUp";
 import { cn } from "@/lib/utils";
 import { fallbackSiteSettings, type SiteSettings } from "@/data/fallback";
@@ -129,6 +130,18 @@ export default function HeroSection({
         <HeroCanvas />
       </div>
 
+      {/* Left-side scrim — keeps the copy on clean ink where the particle
+          field would otherwise wash across it on wide screens. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 hidden pointer-events-none lg:block"
+        style={{
+          // alpha-only, so the ambient vignette underneath still reads
+          background:
+            "linear-gradient(90deg, rgba(8,9,12,0.94) 0%, rgba(8,9,12,0.86) 30%, rgba(8,9,12,0.45) 48%, rgba(8,9,12,0) 66%)",
+        }}
+      />
+
       <div className="container-luxe relative z-10 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.55fr)] items-center gap-12">
           {/* LEFT — content */}
@@ -140,10 +153,7 @@ export default function HeroSection({
             >
               <span className="eyebrow">{siteSettings.heroGreeting}</span>
               <span className="inline-flex items-center gap-2 text-[0.72rem] tracking-[0.18em] uppercase text-muted-luxe">
-                <span
-                  className="w-1.5 h-1.5 rounded-full animate-dot-pulse"
-                  style={{ background: "var(--gold)" }}
-                />
+                <StatusDot size={7} />
                 {siteSettings.availabilityStatus}
               </span>
             </div>

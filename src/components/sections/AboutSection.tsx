@@ -3,6 +3,7 @@
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 import GitHubHeatmap from "@/components/ui/GitHubHeatmap";
+import StatusDot from "@/components/ui/StatusDot";
 import { cn } from "@/lib/utils";
 import { fallbackAbout, type AboutContent } from "@/data/fallback";
 import type { GitHubData } from "@/lib/github";
@@ -60,7 +61,7 @@ export default function AboutSection({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
           {/* Bio — large, spans most of the width */}
           <Reveal className="lg:col-span-8" delay={0.05}>
-            <div className="surface surface-hover h-full p-8 lg:p-12 flex flex-col sm:flex-row gap-8 lg:gap-10">
+            <div className="surface surface-hover h-full p-8 lg:p-12 flex flex-col sm:flex-row sm:items-center gap-8 lg:gap-10">
               {/* Avatar or monogram */}
               <div className="flex-shrink-0">
                 {about.avatar ? (
@@ -88,7 +89,7 @@ export default function AboutSection({
               </div>
 
               {/* Bio column */}
-              <div className="flex flex-col gap-5 max-w-2xl">
+              <div className="flex flex-col justify-center gap-5 max-w-2xl">
                 {about.bio.map((paragraph, i) => (
                   <p
                     key={i}
@@ -130,10 +131,7 @@ export default function AboutSection({
                 <span className="eyebrow">Availability</span>
                 {about.availableForWork && (
                   <div className="flex items-center gap-2.5">
-                    <span
-                      className="w-1.5 h-1.5 rounded-full animate-dot-pulse"
-                      style={{ background: "var(--gold)" }}
-                    />
+                    <StatusDot size={7} />
                     <span
                       className="text-soft text-sm"
                       style={{ fontFamily: "var(--font-poppins)", fontWeight: 500 }}

@@ -70,6 +70,10 @@ export default function Reveal({
       return;
     }
 
+    // threshold 0 + a negative bottom margin: fire as soon as the element's
+    // top edge crosses ~88% of the viewport. A fractional threshold would
+    // never be satisfied early enough for blocks taller than the viewport —
+    // those sections stayed invisible until well after they'd scrolled in.
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -79,7 +83,7 @@ export default function Reveal({
           setVisible(false);
         }
       },
-      { threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
+      { threshold: 0, rootMargin: "0px 0px -12% 0px" }
     );
 
     observer.observe(el);
