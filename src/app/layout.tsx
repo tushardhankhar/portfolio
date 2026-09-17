@@ -23,19 +23,19 @@ const SITE_URL = "https://tushardhankhar.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Tushar Dhankhar — Full Stack Engineer & AI Builder",
+  title: "Tushar Dhankhar — Senior Software Engineer",
   description:
-    "Senior Full Stack Engineer specializing in React, Next.js, Node.js, and AI-powered applications. Building fast, beautiful, and intelligent web experiences.",
+    "Senior Software Engineer with 6+ years building scalable web applications in React, Next.js, TypeScript and Node.js. Architecting domain logic, design systems and performant product experiences.",
   alternates: {
     canonical: "/",
   },
   keywords: [
     "Tushar Dhankhar",
+    "Senior Software Engineer",
     "Full Stack Engineer",
     "React",
     "Next.js",
     "Node.js",
-    "AI Builder",
     "TypeScript",
     "Portfolio",
   ],
@@ -45,24 +45,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: SITE_URL,
-    title: "Tushar Dhankhar — Full Stack Engineer & AI Builder",
+    title: "Tushar Dhankhar — Senior Software Engineer",
     description:
-      "Senior Full Stack Engineer specializing in React, Next.js, Node.js, and AI-powered applications.",
+      "Senior Software Engineer with 6+ years building scalable web applications in React, Next.js, TypeScript and Node.js.",
     siteName: "Tushar Dhankhar Portfolio",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Tushar Dhankhar — Full Stack Engineer & AI Builder",
+        alt: "Tushar Dhankhar — Senior Software Engineer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tushar Dhankhar — Full Stack Engineer & AI Builder",
+    title: "Tushar Dhankhar — Senior Software Engineer",
     description:
-      "Senior Full Stack Engineer specializing in React, Next.js, Node.js, and AI-powered applications.",
+      "Senior Software Engineer with 6+ years building scalable web applications in React, Next.js, TypeScript and Node.js.",
     creator: "@tushardhankhar",
   },
   robots: {
